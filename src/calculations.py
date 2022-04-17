@@ -3,7 +3,7 @@
 # Imports
 import numpy as np
 from scipy.fft import fft
-from scipy.signal import hanning
+from scipy.signal import hamming, filtfilt
 import matplotlib.pyplot as plt
 
 # Demo mode (1=ON/0=OFF)
@@ -30,9 +30,8 @@ else:
     y = 1
 
 
-# Multiplying with the hanning window
-y_w = y*hanning(256)
-FFT=fft(y_w)
+# Applying the hamming Window
+y_filt =
 
 if demo == 1:
     plt.plot(FFT,256)
