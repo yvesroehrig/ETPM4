@@ -65,8 +65,8 @@ try:
 	Test()
 	time.sleep(idle_time)
 	while True:
-		for i in range(0, 100, 11):
-			Set(i)
+		for i in range(0, 101, 10):
+			Dimm(i)
 			time.sleep(idle_time)
 except KeyboardInterrupt:
 	i2c.write_byte_data(display_10e0,0x09,0x00)
