@@ -7,7 +7,7 @@ from scipy.signal import hann, butter, filtfilt, lfilter
 from scipy import signal
 import matplotlib.pyplot as plt
 
-import main
+import settings
 
 # Constants
 fc = 24e9
@@ -18,22 +18,22 @@ ld = c/fc
 def Init():
     # Calculating measuring Parameters
     global wFs,DT,TS
-    wFs = main.Fs*2*np.pi    # circular sampling frequency
-    DT = 1/main.Fs           # Time per sample
-    TS = DT*main.N_Samp       # Sampling time
+    wFs = settings.Fs*2*np.pi    # circular sampling frequency
+    DT = 1/settings.Fs           # Time per sample
+    TS = DT*settings.N_Samp       # Sampling time
 
-    if main.DEBUG == True:
-        print("Number of samples: " + str(main.N_Samp))
-        print("Sampling frequency: " + str(main.Fs))
+    if settings.DEBUG == True:
+        print("Number of samples: " + str(settings.N_Samp))
+        print("Sampling frequency: " + str(settings.Fs))
         print("circular sampling frequency: " + str(wFs))
         print("Time per sample: " + str(DT))
         print("Sampling Time: " + str(TS))
 
     # calculate the digital filter
     global b,a
-    b,a = butter(10, np.multiply([400, 5000], 2*np.pi), btype="band", fs=(main.Fs*2*np.pi), output='ba', analog=False)
-    if main.DEBUG == True:
-        w,h = signal.freqz(b,a, worN=main.N_Samp,fs=wFs)
+    b,a = butter(10, np.multiply([400, 5000], 2*np.pi), btype="band", fs=(settings.Fs*2*np.pi), output='ba', analog=False)
+    if settings.DEBUG == True:
+        w,h = signal.freqz(b,a, worN=settings.N_Samp,fs=wFs)
         plt.semilogx(w/(2*np.pi),20*np.log10(abs(h)))
         plt.title('Butterworth filter frequency response')
         plt.xlabel('Frequency [Hz]')
@@ -47,4 +47,4 @@ def Init():
     
     # create the window
     global window
-    window = hann(main.N_Samp, sym=True)
+    window = hann(settings.N_Samp, sym=True)
