@@ -2,37 +2,49 @@
 
 # Imports
 import numpy as np
-from scipy.fft import fft
-from scipy.signal import hamming, filtfilt
+from scipy.fft import fft, fftshift, fftfreq
+from scipy.signal import hann, butter, filtfilt, lfilter
+from scipy import signal
 import matplotlib.pyplot as plt
 
-# Demo mode (1=ON/0=OFF)
-demo = 1
-# Parameter
-N_FFT = 256     # Number of measuring points 
-FS = 14000      # Sampling frequency
-DT = 1/FS       # Time per sample
-TS = DT*N_FFT   # Sampling time
+import main
 
+# Constants
+fc = 24e9
+c = 3e8
+ld = c/fc
 
-if demo == 1:
-    # demo signal
-    f1 = 200        # Frequency for the demo signal
-    w = 2*np.pi*f1  # circular frequency
-    A = 0.100
-    t = np.linspace(0,TS,256)   # time vector
-    y = A*np.sin(w*t) # Signal
+# Initialisation for the calculations
+def Init():
+    # Calculating measuring Parameters
+    global wFs,DT,TS
+    wFs = main.Fs*2*np.pi    # circular sampling frequency
+    DT = 1/main.Fs           # Time per sample
+    TS = DT*main.N_Samp       # Sampling time
 
-    plt.plot(t,y)
-    plt.show()
-else:
-    # Import measurement data
-    y = 1
+    if main.DEBUG == True:
+        print("Number of samples: " + str(main.N_Samp))
+        print("Sampling frequency: " + str(main.Fs))
+        print("circular sampling frequency: " + str(wFs))
+        print("Time per sample: " + str(DT))
+        print("Sampling Time: " + str(TS))
 
-
-# Applying the hamming Window
-y_filt =
-
-if demo == 1:
-    plt.plot(FFT,256)
-    plt.show()
+    # calculate the digital filter
+    global b,a
+    b,a = butter(10, np.multiply([400, 5000], 2*np.pi), btype="band", fs=(main.Fs*2*np.pi), output='ba', analog=False)
+    if main.DEBUG == True:
+        w,h = signal.freqz(b,a, worN=main.N_Samp,fs=wFs)
+        plt.semilogx(w/(2*np.pi),20*np.log10(abs(h)))
+        plt.title('Butterworth filter frequency response')
+        plt.xlabel('Frequency [Hz]')
+        plt.ylabel('Amplitude [dB]')
+        plt.grid(which='both', axis='both')
+        plt.margins(0, 0.1)
+        plt.axvline(400, color='green') # highpass frequency
+        plt.axvline(5000, color='green') # lowpass frequency
+        plt.legend(["Frequency response","Pass Band"])
+        plt.savefig("Filter.png")
+    
+    # create the window
+    global window
+    window = hann(main.N_Samp, sym=True)
