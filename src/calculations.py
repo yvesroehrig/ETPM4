@@ -43,8 +43,17 @@ def Init():
         plt.axvline(400, color='green') # highpass frequency
         plt.axvline(5000, color='green') # lowpass frequency
         plt.legend(["Frequency response","Pass Band"])
-        plt.savefig("Filter.png")
+        plt.savefig("/home/pi/ETPM4/html/images/Filter.png", dpi=150)
+        print("Filter plot saved")
     
     # create the window
     global window
     window = hann(settings.N_Samp, sym=True)
+    if settings.DEBUG == True:
+        plt.plot(window)
+        plt.title("Hanning Window")
+        plt.xlabel("Sample Number")
+        plt.ylabel("Amplitude")
+        plt.grid()
+        plt.savefig("/home/pi/ETPM4/html/images/Window.jpg", dpi=150)
+        print("Window plot saved")
