@@ -12,7 +12,7 @@ buttons = 0x23	# button I/O expander
 
 # MCP23008 register address
 mcp_conf_reg = 0b00000000
-mcp_gpio_reg = 0x09
+mcp_gpio_reg = 0x00001001
 
 # MCP23008 configuration values
 mcp_set_gpio_in = 0b11111111 # Configure all pins as input
