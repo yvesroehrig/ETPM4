@@ -34,6 +34,7 @@ def Init():
     b,a = butter(10, np.multiply([400, 5000], 2*np.pi), btype="band", fs=(settings.Fs*2*np.pi), output='ba', analog=False)
     if settings.DEBUG == True:
         w,h = signal.freqz(b,a, worN=settings.N_Samp,fs=wFs)
+        plt.figure(1)
         plt.semilogx(w/(2*np.pi),20*np.log10(abs(h)))
         plt.title('Butterworth filter frequency response')
         plt.xlabel('Frequency [Hz]')
@@ -43,13 +44,14 @@ def Init():
         plt.axvline(400, color='green') # highpass frequency
         plt.axvline(5000, color='green') # lowpass frequency
         plt.legend(["Frequency response","Pass Band"])
-        plt.savefig("/home/pi/ETPM4/html/images/Filter.png", dpi=150)
+        plt.savefig("/home/pi/ETPM4/html/images/Filter.jpg", dpi=150)
         print("Filter plot saved")
     
     # create the window
     global window
     window = hann(settings.N_Samp, sym=True)
     if settings.DEBUG == True:
+        plt.figure(2)
         plt.plot(window)
         plt.title("Hanning Window")
         plt.xlabel("Sample Number")
