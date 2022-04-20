@@ -32,6 +32,8 @@ def Init():
     # calculate the digital filter
     global b,a
     b,a = butter(10, np.multiply([400, 5000], 2*np.pi), btype="band", fs=(settings.Fs*2*np.pi), output='ba', analog=False)
+    
+    # Plot filter
     if settings.DEBUG == True:
         w,h = signal.freqz(b,a, worN=settings.N_Samp,fs=wFs)
         plt.figure(1)
@@ -50,6 +52,8 @@ def Init():
     # create the window
     global window
     window = hann(settings.N_Samp, sym=True)
+
+    # Plot window
     if settings.DEBUG == True:
         plt.figure(2)
         plt.plot(window)
@@ -59,3 +63,26 @@ def Init():
         plt.grid()
         plt.savefig("/home/pi/ETPM4/html/images/Window.jpg", dpi=150)
         print("Window plot saved")
+
+def GetSpeed(I,Q):
+    # create time vector
+    t = np.linspace(0,TS,settings.N_Samp)
+
+    # Plot input signal
+    if settings.DEBUG == True:
+        plt.figure(3)
+        plt.plot(t,I,t,Q)
+        plt.grid()
+        plt.title("Input Signal")
+        plt.xlabel("Time in s")
+        plt.ylabel("Voltage in V")
+        plt.legend(["I-Signal", "Q-Singal"])
+        plt.savefig("Input.jpg",dpi=100)
+
+    # calculate DC
+    DC_I = 1/settings.N_Samp * np.sum(I)
+    DC_Q = 1/settings.N_Samp * np.sum(Q)
+
+    # remove DC
+    I = I - DC_I
+    Q = Q - DC_Q 
