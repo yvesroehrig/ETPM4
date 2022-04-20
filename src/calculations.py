@@ -145,7 +145,7 @@ def demoSignal():
         plt.savefig("../html/images/Demosignal.jpg",dpi=100)
         plt.show()
 
-    demoSig = np.zeros(settings.N_Samp,2)
+    demoSig = np.zeros([settings.N_Samp,2])
     demoSig[:,0] = I
     demoSig[:,1] = Q
 
