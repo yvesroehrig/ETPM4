@@ -1,11 +1,14 @@
 # File for the processing of the measured Data
 
 # Imports
+from threading import local
+import time as time
 import numpy as np
 from scipy.fft import fft, fftshift, fftfreq
 from scipy.signal import hann, butter, filtfilt, lfilter
 from scipy import signal
 import matplotlib.pyplot as plt
+
 
 import settings
 
@@ -14,9 +17,15 @@ fc = 24e9
 c = 3e8
 ld = c/fc
 
+# global variables
+global globalstartTime
+global localStartTime
+
 # Initialisation for the calculations
 def Init():
     # Calculating measuring Parameters
+    global localStartTime
+    globalStartTime = time.time()
     global wFs,DT,TS
     wFs = settings.Fs*2*np.pi    # circular sampling frequency
     DT = 1/settings.Fs           # Time per sample
@@ -28,8 +37,11 @@ def Init():
         print("circular sampling frequency: " + str(wFs))
         print("Time per sample: " + str(DT))
         print("Sampling Time: " + str(TS))
+        stopTime = time.time()
+        print("Parameter Time:" + str(stopTime-globalStartTime))
 
     # calculate the digital filter
+    localStartTime = time.time()
     global b,a
     b,a = butter(10, np.multiply([400, 5000], 2*np.pi), btype="band", fs=(settings.Fs*2*np.pi), output='ba', analog=False)
     
@@ -46,7 +58,7 @@ def Init():
         plt.axvline(400, color='green') # highpass frequency
         plt.axvline(5000, color='green') # lowpass frequency
         plt.legend(["Frequency response","Pass Band"])
-        plt.savefig("../html/images/Filter.jpg", dpi=150)
+        plt.savefig("./html/images/Filter.jpg", dpi=150)
         plt.show()
         print("Filter plot saved")
     
@@ -62,7 +74,7 @@ def Init():
         plt.xlabel("Sample Number")
         plt.ylabel("Amplitude")
         plt.grid()
-        plt.savefig("../html/images/Window.jpg", dpi=150)
+        plt.savefig("./html/images/Window.jpg", dpi=150)
         plt.show()
         print("Window plot saved")
 
@@ -79,7 +91,7 @@ def GetSpeed(I,Q):
         plt.xlabel("Time in s")
         plt.ylabel("Voltage in V")
         plt.legend(["I-Signal", "Q-Singal"])
-        plt.savefig("../html/images/Input.jpg",dpi=100)
+        plt.savefig("./html/images/Input.jpg",dpi=100)
         print("Input plot saved")
 
     # calculate DC
@@ -99,8 +111,9 @@ def GetSpeed(I,Q):
         plt.xlabel("Time in s")
         plt.ylabel("Voltage in V")
         plt.legend(["I-Signal", "Q-Singal"])
-        plt.savefig("../html/images/DC_free_input.jpg",dpi=100)
+        plt.savefig("./html/images/DC_free_input.jpg",dpi=100)
         print("DC-free plot saved")
+    
 
 def demoSignal():
     # demo signal
@@ -142,7 +155,7 @@ def demoSignal():
         plt.xlabel("Time in s")
         plt.ylabel("Voltage in V")
         plt.legend(["I-Signal", "Q-Singal"])
-        plt.savefig("../html/images/Demosignal.jpg",dpi=100)
+        plt.savefig("./html/images/Demosignal.jpg",dpi=100)
         plt.show()
 
     demoSig = np.zeros([settings.N_Samp,2])
