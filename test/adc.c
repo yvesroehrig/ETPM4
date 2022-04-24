@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <bc2835.h>
 
 #define MASK_12_BIT 0x0FFF
 #define ADC1 0x08
@@ -48,6 +49,8 @@ int main(void){
   if((write(file_i2c_ADC1, data, 1) != 1) || (write(file_i2c_ADC2, data, 1) != 1)){
   printf("Failed to write to the i2c Bus.\n");
   }
+
+  // send test broadcast
 
   // read bytes
   gettimeofday(&t1, NULL);
