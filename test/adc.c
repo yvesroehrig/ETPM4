@@ -52,7 +52,7 @@ int main(void){
   }
   
   if(ioctl(file_i2c_BRDC, I2C_SLAVE, BROADCAST) < 0){
-    printf("Failed to acquire bus accss and/or talk to ADC2.\n");
+    printf("Failed to acquire bus accss and/or talk to Broadcast.\n");
   }
 
   // write config
@@ -65,7 +65,7 @@ int main(void){
     // read bytes
     gettimeofday(&t1, NULL);
     for(int i=0;i<NUM_PT;i++){
-      //(write(file_i2c_BRDC, data, 1));
+      write(file_i2c_BRDC, data, 0);
       if(i2c_smbus_write_quick(file_i2c_BRDC,1)){
         printf("Broadcast fehlgeschlagen.\n");
       }
