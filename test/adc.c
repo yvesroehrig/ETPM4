@@ -65,10 +65,9 @@ int main(void){
     // read bytes
     gettimeofday(&t1, NULL);
     for(int i=0;i<NUM_PT;i++){
-      write(file_i2c_BRDC, data, 0);
-      if(i2c_smbus_write_quick(file_i2c_BRDC,1)){
-        printf("Broadcast fehlgeschlagen.\n");
-      }
+      //write(file_i2c_BRDC, data, 1);
+      //i2c_smbus_write_byte(file_i2c_BRDC,data[0]);
+      i2c_smbus_write_quick(file_i2c_ADC1,0);
       //close(file_i2c_BRDC);
       if(read(file_i2c_ADC1, data_ADC1 + i, length) != length){
         printf("Failed to read from the ADC1.\n");
