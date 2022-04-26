@@ -1,6 +1,7 @@
 # File for the processing of the measured Data
 
 # Imports
+from posixpath import split
 from threading import local
 import time as time
 import numpy as np
@@ -8,9 +9,10 @@ from scipy.fft import fft, fftshift, fftfreq
 from scipy.signal import hann, butter, filtfilt, lfilter
 from scipy import signal
 import matplotlib.pyplot as plt
-
-
 import settings
+from ctypes import *
+so_file = "./test/adc2.so"
+ADC = CDLL(so_file)
 
 # Constants
 fc = 24e9
@@ -168,6 +170,13 @@ def demoSignal():
 # create an i2c instance when file is in script mode
 if __name__ == "__main__":
     Init()
-    sig = demoSignal()
-    GetSpeed(sig[:,0],sig[:,1])
-    print("Script finished")
+    #sig = demoSignal()
+    sig = ADC.adc_meas(0,settings.N_Samp)
+    #sig_split = np.zeros([settings.N_Samp,2])
+    #sig_split[:,0] = sig[:((settings.N_Samp/2)-1)]
+    #sig_split[:,1] = sig[(settings.N_Samp/2):(settings.N_Samp-1)]
+    plt.plot(split)
+    plt.grid()
+    plt.savefig("test.jpg", dpi = 100)
+    #GetSpeed(sig[:,0],sig[:,1])
+    #print("Script finished")

@@ -21,7 +21,7 @@
 #define NUM_PT 1024
 #define BROADCAST 0x6B
 
-uint16_t adc_meas(uint8_t CH, uint16_t N_samp){
+uint16_t *adc_meas(uint8_t CH, uint16_t N_samp){
   // variables
   int file_i2c_ADC1, file_i2c_ADC2, file_i2c_BRDC, length = 2;
   static uint16_t data_ADC[2*NUM_PT] = {0};
@@ -79,10 +79,10 @@ uint16_t adc_meas(uint8_t CH, uint16_t N_samp){
     //i2c_smbus_write_quick(0x6b,0x0);
     //i2c_smbus_write_quick(file_i2c_BRDC,0x0);
     //close(file_i2c_BRDC);
-    if(read(file_i2c_ADC1, data_ADC[0] + i, length) != length){
+    if(read(file_i2c_ADC1, data_ADC + i, length) != length){
       printf("Failed to read from the ADC1.\n");
     }
-    if(read(file_i2c_ADC2, data_ADC[N_samp] + i, length) != length){
+    if(read(file_i2c_ADC2, data_ADC + i + N_samp, length) != length){
       //printf("Failed to read from the ADC2.\n");
     }
   }
@@ -93,7 +93,7 @@ uint16_t adc_meas(uint8_t CH, uint16_t N_samp){
 
   //shift values
   for(int i=0;i<2*N_samp;i++){
-    data_ADC1[i] = ((data_ADC[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC[i] & MASK_LOWER_BYTE)<<4);
+    data_ADC[i] = ((data_ADC[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC[i] & MASK_LOWER_BYTE)<<4);
   }
   
   return data_ADC;
