@@ -1,18 +1,17 @@
 # File for the processing of the measured Data
 
 # Imports
-from posixpath import split
-from threading import local
+import ctypes
 import time as time
 import numpy as np
+from numpy.ctypeslib import ndpointer
 from scipy.fft import fft, fftshift, fftfreq
 from scipy.signal import hann, butter, filtfilt, lfilter
 from scipy import signal
 import matplotlib.pyplot as plt
 import settings
 from ctypes import *
-so_file = "./test/adc2.so"
-ADC = CDLL(so_file)
+
 
 # Constants
 fc = 24e9
@@ -171,12 +170,22 @@ def demoSignal():
 if __name__ == "__main__":
     Init()
     #sig = demoSignal()
-    sig = ADC.adc_meas(0,settings.N_Samp)
-    #sig_split = np.zeros([settings.N_Samp,2])
-    #sig_split[:,0] = sig[:((settings.N_Samp/2)-1)]
-    #sig_split[:,1] = sig[(settings.N_Samp/2):(settings.N_Samp-1)]
-    plt.plot(split)
-    plt.grid()
-    plt.savefig("test.jpg", dpi = 100)
+    # Calling the C-Function
+    so_file = "./test/adc2.so" # set the lib
+    ADC = CDLL(so_file) # open lib
+    meas = ADC.adc_meas
+    meas.restype = None # set output type
+    meas.argtypes =  [ctypes.c_uint8,
+                    ctypes.c_uint16,
+                    ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS"),
+                    ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS")] # set input types
+    I_sig = np.ascontiguousarray(np.ones((settings.N_Samp)))
+    Q_sig = np.ascontiguousarray(np.empty((settings.N_Samp)))
+    meas(0,settings.N_Samp,I_sig,Q_sig)
+    print(Q_sig)
+    print(I_sig)
+    #plt.plot(sig)
+    #plt.grid()
+    #plt.savefig("test.jpg", dpi = 100)
     #GetSpeed(sig[:,0],sig[:,1])
     #print("Script finished")
