@@ -179,8 +179,8 @@ if __name__ == "__main__":
                     ctypes.c_uint16,
                     ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS"),
                     ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS")] # set input types
-    I_sig = np.ascontiguousarray(np.ones((settings.N_Samp)))
-    Q_sig = np.ascontiguousarray(np.empty((settings.N_Samp)))
+    I_sig = np.ascontiguousarray(np.zeros(settings.N_Samp, dtype=ctypes.c_uint16))
+    Q_sig = np.ascontiguousarray(np.zeros(settings.N_Samp, dtype=ctypes.c_uint16))
     meas(0,settings.N_Samp,I_sig,Q_sig)
     print(Q_sig)
     print(I_sig)
