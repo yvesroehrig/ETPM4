@@ -16,9 +16,8 @@
 #define MASK_LOWER_BYTE 0x00FF
 #define ADC1 0x08
 #define ADC2 0x09
-#define CH0 0x80
-#define CH1 0xC0
-#define NUM_PT 1024
+#define CH0 0x88
+#define CH1 0xC8
 #define BROADCAST 0x6B
 
 void adc_meas(uint8_t CH, uint16_t N_samp, uint16_t *data_ADC1, uint16_t *data_ADC2){
@@ -74,16 +73,9 @@ void adc_meas(uint8_t CH, uint16_t N_samp, uint16_t *data_ADC1, uint16_t *data_A
   // read bytes
   gettimeofday(&t1, NULL);
   for(int i=0;i<N_samp;i++){
-    write(file_i2c_BRDC, data, 1);
-    //i2c_smbus_write_byte(file_i2c_BRDC,data[0]);
-    //i2c_smbus_write_quick(0x6b,0x0);
-    //i2c_smbus_write_quick(file_i2c_BRDC,0x0);
-    if(read(file_i2c_ADC1, data_ADC1 + i, length) != length){
-      printf("Failed to read from the ADC1.\n");
-    }
-    if(read(file_i2c_ADC2, data_ADC2 + i, length) != length){
-      //printf("Failed to read from the ADC2.\n");
-    }
+    i2c_smbus_write_quick(0x6b,0x0);
+    read(file_i2c_ADC1, data_ADC1 + i, length) != length);
+    read(file_i2c_ADC2, data_ADC2 + i, length) != length);
   }
     
   gettimeofday(&t2, NULL);

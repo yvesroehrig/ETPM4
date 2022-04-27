@@ -16,8 +16,8 @@
 #define MASK_LOWER_BYTE 0x00FF
 #define ADC1 0x08
 #define ADC2 0x09
-#define CH0 0x80
-#define CH1 0xC0
+#define CH0 0x88
+#define CH1 0xC8
 #define NUM_PT 1024
 #define BROADCAST 0x6B
 
@@ -72,12 +72,8 @@ int main(void){
       //i2c_smbus_write_quick(0x6b,0x0);
       //i2c_smbus_write_quick(file_i2c_BRDC,0x0);
       //close(file_i2c_BRDC);
-      if(read(file_i2c_ADC1, data_ADC1 + i, length) != length){
-        printf("Failed to read from the ADC1.\n");
-      }
-      if(read(file_i2c_ADC2, data_ADC2 + i, length) != length){
-        //printf("Failed to read from the ADC2.\n");
-      }
+      read(file_i2c_ADC1, data_ADC1 + i, length) != length;
+      read(file_i2c_ADC2, data_ADC2 + i, length) != length;
     }
     
     gettimeofday(&t2, NULL);
