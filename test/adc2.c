@@ -78,7 +78,6 @@ void adc_meas(uint8_t CH, uint16_t N_samp, uint16_t *data_ADC1, uint16_t *data_A
     //i2c_smbus_write_byte(file_i2c_BRDC,data[0]);
     //i2c_smbus_write_quick(0x6b,0x0);
     //i2c_smbus_write_quick(file_i2c_BRDC,0x0);
-    //close(file_i2c_BRDC);
     if(read(file_i2c_ADC1, data_ADC1 + i, length) != length){
       printf("Failed to read from the ADC1.\n");
     }
@@ -92,8 +91,9 @@ void adc_meas(uint8_t CH, uint16_t N_samp, uint16_t *data_ADC1, uint16_t *data_A
   printf("Elapsed Time: %lld\n",elapsedTime);
 
   //shift values
-  for(int i=0;i<N_samp;i++){
-    data_ADC1[i] = ((data_ADC1[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC1[i] & MASK_LOWER_BYTE)<<4);
-    data_ADC1[i] = ((data_ADC1[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC1[i] & MASK_LOWER_BYTE)<<4);
+  for(int i=0;i<16;i++){
+    data_ADC1[i] = ((data_ADC1[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC2[i] & MASK_LOWER_BYTE)<<4);
+    data_ADC2[i] = ((data_ADC2[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC2[i] & MASK_LOWER_BYTE)<<4);
+    printf("ADC1: %u ADC2: %u\n", data_ADC1[i],data_ADC2[i]);
   }
 }
