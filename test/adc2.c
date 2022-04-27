@@ -85,10 +85,10 @@ uint32_t adc_meas(uint8_t CH, uint16_t N_samp, uint16_t *data_ADC1, uint16_t *da
   t_samp = (uint32_t)elapsedTime;
 
   //shift values
-  for(int i=0;i<16;i++){
+  for(int i=0;i<N_samp;i++){
     data_ADC1[i] = ((data_ADC1[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC1[i] & MASK_LOWER_BYTE)<<4);
     data_ADC2[i] = ((data_ADC2[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC2[i] & MASK_LOWER_BYTE)<<4);
-    printf("ADC1: %u ADC2: %u\n", data_ADC1[i],data_ADC2[i]);
+    //printf("ADC1: %u ADC2: %u\n", data_ADC1[i],data_ADC2[i]);
   }
 
   return t_samp;
