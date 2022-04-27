@@ -20,12 +20,12 @@
 #define CH1 0xC8
 #define BROADCAST 0x6B
 
-void adc_meas(uint8_t CH, uint16_t N_samp, uint16_t *data_ADC1, uint16_t *data_ADC2){
+uint32_t adc_meas(uint8_t CH, uint16_t N_samp, uint16_t *data_ADC1, uint16_t *data_ADC2){
   // variables
   int file_i2c_ADC1, file_i2c_ADC2, file_i2c_BRDC, length = 2;
   //static uint16_t data_ADC[2*NUM_PT] = {0};
   uint16_t data [2] = {0};
-
+  uint32_t t_samp;
   struct timeval t1, t2;
   long long elapsedTime;
 
@@ -82,10 +82,14 @@ void adc_meas(uint8_t CH, uint16_t N_samp, uint16_t *data_ADC1, uint16_t *data_A
   elapsedTime = ((t2.tv_sec * 1000000) + t2.tv_usec)- ((t1.tv_sec * 1000000) + t1.tv_usec);
   printf("Elapsed Time: %lld\n",elapsedTime);
 
+  t_samp = (uint32_t)elapsedTime;
+
   //shift values
   for(int i=0;i<16;i++){
     data_ADC1[i] = ((data_ADC1[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC1[i] & MASK_LOWER_BYTE)<<4);
     data_ADC2[i] = ((data_ADC2[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC2[i] & MASK_LOWER_BYTE)<<4);
     printf("ADC1: %u ADC2: %u\n", data_ADC1[i],data_ADC2[i]);
   }
+
+  return t_samp;
 }

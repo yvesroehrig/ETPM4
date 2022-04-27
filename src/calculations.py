@@ -174,18 +174,20 @@ if __name__ == "__main__":
     so_file = "./test/adc2.so" # set the lib
     ADC = CDLL(so_file) # open lib
     meas = ADC.adc_meas
-    meas.restype = None # set output type
+    meas.restype = ctypes.c_uint32 # set output type
     meas.argtypes =  [ctypes.c_uint8,
                     ctypes.c_uint16,
                     ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS"),
                     ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS")] # set input types
+    
     I_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
     Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
-    meas(ctypes.c_uint8(0),settings.N_Samp,I_sig,Q_sig)
+    t_samp = meas(ctypes.c_uint8(0),settings.N_Samp,I_sig,Q_sig)
 
     # shift values
     print(Q_sig[0:15])
     print(I_sig[0:15])
+    print("Sampling time: " + str(float(t_samp)/1000) + "ms")
     #plt.plot(sig)
     #plt.grid()
     #plt.savefig("test.jpg", dpi = 100)
