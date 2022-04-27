@@ -74,8 +74,8 @@ void adc_meas(uint8_t CH, uint16_t N_samp, uint16_t *data_ADC1, uint16_t *data_A
   gettimeofday(&t1, NULL);
   for(int i=0;i<N_samp;i++){
     i2c_smbus_write_quick(0x6b,0x0);
-    read(file_i2c_ADC1, data_ADC1 + i, length) != length);
-    read(file_i2c_ADC2, data_ADC2 + i, length) != length);
+    read(file_i2c_ADC1, data_ADC1 + i, length);
+    read(file_i2c_ADC2, data_ADC2 + i, length);
   }
     
   gettimeofday(&t2, NULL);
@@ -84,7 +84,7 @@ void adc_meas(uint8_t CH, uint16_t N_samp, uint16_t *data_ADC1, uint16_t *data_A
 
   //shift values
   for(int i=0;i<16;i++){
-    data_ADC1[i] = ((data_ADC1[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC2[i] & MASK_LOWER_BYTE)<<4);
+    data_ADC1[i] = ((data_ADC1[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC1[i] & MASK_LOWER_BYTE)<<4);
     data_ADC2[i] = ((data_ADC2[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC2[i] & MASK_LOWER_BYTE)<<4);
     printf("ADC1: %u ADC2: %u\n", data_ADC1[i],data_ADC2[i]);
   }

@@ -67,13 +67,13 @@ int main(void){
     // read bytes
     gettimeofday(&t1, NULL);
     for(int i=0;i<NUM_PT;i++){
-      write(file_i2c_BRDC, data, 1);
+      //write(file_i2c_BRDC, data, 1);
       //i2c_smbus_write_byte(file_i2c_BRDC,data[0]);
-      //i2c_smbus_write_quick(0x6b,0x0);
+      i2c_smbus_write_quick(0x6b,0x0);
       //i2c_smbus_write_quick(file_i2c_BRDC,0x0);
       //close(file_i2c_BRDC);
-      read(file_i2c_ADC1, data_ADC1 + i, length) != length;
-      read(file_i2c_ADC2, data_ADC2 + i, length) != length;
+      read(file_i2c_ADC1, data_ADC1 + i, length);
+      read(file_i2c_ADC2, data_ADC2 + i, length);
     }
     
     gettimeofday(&t2, NULL);
