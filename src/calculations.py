@@ -1,16 +1,17 @@
 # File for the processing of the measured Data
 
 # Imports
-from threading import local
+import ctypes
 import time as time
 import numpy as np
+from numpy.ctypeslib import ndpointer
 from scipy.fft import fft, fftshift, fftfreq
 from scipy.signal import hann, butter, filtfilt, lfilter
 from scipy import signal
 import matplotlib.pyplot as plt
-
-
 import settings
+from ctypes import *
+
 
 # Constants
 fc = 24e9
@@ -168,6 +169,30 @@ def demoSignal():
 # create an i2c instance when file is in script mode
 if __name__ == "__main__":
     Init()
-    sig = demoSignal()
-    GetSpeed(sig[:,0],sig[:,1])
-    print("Script finished")
+    #sig = demoSignal()
+    # Calling the C-Function
+    so_file = "./test/adc2.so" # set the lib
+    ADC = CDLL(so_file) # open lib
+    meas = ADC.adc_meas
+    meas.restype = ctypes.c_uint32 # set output type
+    meas.argtypes =  [ctypes.c_uint8,
+                    ctypes.c_uint16,
+                    ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS"),
+                    ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS")] # set input types
+    
+    I_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+    Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+    t_samp = meas(ctypes.c_uint8(0),settings.N_Samp,I_sig,Q_sig)
+
+    t = np.linspace(0,(t_samp/1000), settings.N_Samp)
+    # shift values
+    print(Q_sig[0:15])
+    print(I_sig[0:15])
+    print("Sampling time: " + str(float(t_samp)/1000) + "ms")
+    plt.figure(100)
+    plt.plot(t/1000,Q_sig,t/1000,I_sig)
+    plt.grid()
+    plt.savefig("test.jpg", dpi = 100)
+    print("input plotted")
+    #GetSpeed(Q_sig,I_sig)
+    #print("Script finished")
