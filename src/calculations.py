@@ -196,3 +196,4 @@ if __name__ == "__main__":
     print("input plotted")
     #GetSpeed(Q_sig,I_sig)
     #print("Script finished")
+    
