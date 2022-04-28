@@ -58,7 +58,7 @@ int main(void){
   }
 
   // write config
-  data [0] = CH0;
+  data [0] = CH1;
   if((write(file_i2c_ADC1, data, 1) != 1) || (write(file_i2c_ADC2, data, 1) != 1)){
   printf("Failed to write to the i2c Bus.\n");
   }
