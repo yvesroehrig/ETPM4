@@ -56,7 +56,7 @@ int main(void){
   }
 
   // write config
-  data [0] = CH0;
+  data [0] = CH1;
   if((write(file_i2c_ADC1, data, 1) != 1) || (write(file_i2c_ADC2, data, 1) != 1)){
   printf("Failed to write to the i2c Bus.\n");
   }
@@ -67,7 +67,7 @@ int main(void){
     for(int i=0;i<NUM_PT;i++){
       //write(file_i2c_BRDC, data, 1);
       //i2c_smbus_write_byte(file_i2c_BRDC,data[0]);
-      i2c_smbus_write_quick(file_i2c_ADC1,0);
+      i2c_smbus_write_quick(file_i2c_BRDC,1);
       //close(file_i2c_BRDC);
       if(read(file_i2c_ADC1, data_ADC1 + i, length) != length){
         printf("Failed to read from the ADC1.\n");

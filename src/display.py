@@ -4,13 +4,13 @@ import RPi.GPIO as GPIO
 
 # variables
 pwm_pin = 12 # referece at gpio pinout diagram
-pwm_frequency = 100	# Hz
+pwm_frequency = 500	# Hz
 
 # setup GPIO for pwm
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(pwm_pin, GPIO.OUT)
 
-p = GPIO.PWM(pwm_pin, 100)
+p = GPIO.PWM(pwm_pin, pwm_frequency)
 p.start(0)
 
 # create an i2c instance when file is in script mode
