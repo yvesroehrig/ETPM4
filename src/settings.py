@@ -8,4 +8,4 @@ Fs          = 9000 # Sampling frequency
 N_Samp      = 1024   # Number of Samples
 Filt_ord    = 10    # Order of the digital filter
 f_band_low  = 400  # Lower frequency for bandpass
-f_band_high = FS/2 # Higher frequency for bandpass at half 
+f_band_high = Fs/2 # Higher frequency for bandpass at half 
