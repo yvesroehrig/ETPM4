@@ -22,6 +22,19 @@ ld = c/fc
 global globalstartTime
 global localStartTime
 
+# C Functions
+so_file = "./test/adc2.so" # set the lib
+ADC = CDLL(so_file) # open lib
+meas = ADC.adc_meas
+meas.restype = ctypes.c_uint32 # set output type
+meas.argtypes =  [ctypes.c_uint8,
+                ctypes.c_uint16,
+                ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS"),
+                ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS")] # set input types
+    
+I_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+
 # Initialisation for the calculations
 def Init():
     # Calculating measuring Parameters
@@ -79,9 +92,12 @@ def Init():
         plt.show()
         print("Window plot saved")
 
-def GetSpeed(I,Q):
+def GetSpeed():
+
+    t_samp = meas(ctypes.c_uint8(0),settings.N_Samp,I_sig,Q_sig)
+
+    t = np.linspace(0,(t_samp/1000), settings.N_Samp)
     # create time vector
-    t = np.linspace(0,TS,settings.N_Samp)
 
     # Plot input signal
     if settings.DEBUG == True:
@@ -166,28 +182,27 @@ def demoSignal():
     return demoSig
     
 
-# create an i2c instance when file is in script mode
 if __name__ == "__main__":
     Init()
     #sig = demoSignal()
     # Calling the C-Function
-    so_file = "./test/adc2.so" # set the lib
-    ADC = CDLL(so_file) # open lib
-    meas = ADC.adc_meas
-    meas.restype = ctypes.c_uint32 # set output type
-    meas.argtypes =  [ctypes.c_uint8,
-                    ctypes.c_uint16,
-                    ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS"),
-                    ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS")] # set input types
+    # so_file = "./test/adc2.so" # set the lib
+    # ADC = CDLL(so_file) # open lib
+    # meas = ADC.adc_meas
+    # meas.restype = ctypes.c_uint32 # set output type
+    # meas.argtypes =  [ctypes.c_uint8,
+    #                 ctypes.c_uint16,
+    #                 ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS"),
+    #                 ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS")] # set input types
     
-    I_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
-    Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+    # I_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+    # Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
     t_samp = meas(ctypes.c_uint8(0),settings.N_Samp,I_sig,Q_sig)
 
     t = np.linspace(0,(t_samp/1000), settings.N_Samp)
     # shift values
-    print(Q_sig[0:15])
-    print(I_sig[0:15])
+    print(Q_sig[0:])
+    print(I_sig[0:])
     print("Sampling time: " + str(float(t_samp)/1000) + "ms")
     plt.figure(100)
     plt.plot(t/1000,Q_sig,t/1000,I_sig)
