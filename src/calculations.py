@@ -44,7 +44,7 @@ def Init():
     # calculate the digital filter
     localStartTime = time.time()
     global b,a
-    b,a = butter(10, np.multiply([400, settings.Fs/2], 2*np.pi), btype="band", fs=(settings.Fs*2*np.pi), output='ba', analog=False)
+    b,a = butter(10, np.multiply([400, ((settings.Fs/2)-1)], 2*np.pi), btype="band", fs=(settings.Fs*2*np.pi), output='ba', analog=False)
     
     # Plot filter
     if settings.DEBUG == True:
