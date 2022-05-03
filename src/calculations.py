@@ -58,7 +58,7 @@ def Init():
 
     # calculate the digital filter
     global b,a
-    b,a = butter(10, np.multiply([400, ((settings.Fs/2)-1)], 2*np.pi), btype="band", fs=(settings.Fs*2*np.pi), output='ba', analog=False)
+    b,a = butter(10, np.multiply([400, ((settings.Fs/2)-50)], 2*np.pi), btype="band", fs=(settings.Fs*2*np.pi), output='ba', analog=False)
     
     # Plot filter
     if settings.DEBUG == True:
@@ -71,7 +71,7 @@ def Init():
         plt.grid(which='both', axis='both')
         plt.margins(0, 0.1)
         plt.axvline(400, color='green') # highpass frequency
-        plt.axvline(5000, color='green') # lowpass frequency
+        plt.axvline(((settings.Fs/2)-50), color='green') # lowpass frequency
         plt.legend(["Frequency response","Pass Band"])
         plt.savefig("./html/images/Filter.jpg", dpi=150)
         plt.show()
@@ -104,6 +104,10 @@ def GetSpeed():
     t = np.linspace(0,(t_samp/1000), settings.N_Samp)
     # create time vector
 
+    # Demo Signal
+    if settings.DEMO == True:
+        I_sig, Q_sig = demoSignal()
+    
     # Plot input signal
     if settings.DEBUG == True:
         plt.figure(3)
@@ -136,13 +140,14 @@ def GetSpeed():
         plt.savefig("./html/images/DC_free_input.jpg",dpi=150)
         print("DC-free plot saved")
 
+    
     # Filter the signal
     I_filt = filtfilt(b,a,I_sig)
     Q_filt = filtfilt(b,a,Q_sig)
 
     if settings.DEBUG == True:
         plt.figure(5)
-        plt.plot(t,I_filt,t,Q_sig)
+        plt.plot(t,I_filt,t,Q_filt)
         plt.grid()
         plt.title("Filtered Signals")
         plt.xlabel("Time in s")
@@ -202,7 +207,7 @@ def demoSignal():
     demoSig[:,0] = I
     demoSig[:,1] = Q
 
-    return demoSig
+    return I,Q
     
 
 if __name__ == "__main__":
