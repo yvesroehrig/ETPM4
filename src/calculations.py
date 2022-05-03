@@ -2,6 +2,7 @@
 
 # Imports
 import ctypes
+from os import minor
 import time as time
 from turtle import speed
 import numpy as np
@@ -159,7 +160,19 @@ def GetSpeed():
         plt.savefig("./html/images/Filtered_Signals.jpg", dpi=150)
         print("Filtered plot saved")
 
+    # Apply the Window
+    I_filt = I_filt*window_norm
+    I_filt = I_filt*window_norm
 
+    if settings.DEBUG == True:
+        # apply the Window
+        I_filt = np.multiply(window,I_filt)
+        Q_filt = np.multiply(window,Q_filt) 
+        plt.plot(t,I_filt,t,Q_filt)
+        plt.grid(minor)
+        plt.title("Filtered and windowed Signal")
+        plt.legend(["I-Signal", "Q-Singal"])
+        plt.savefig("filtered_windowed.jpg", dpi=150)
 
     speed = 30
     return speed
