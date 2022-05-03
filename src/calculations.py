@@ -78,16 +78,20 @@ def Init():
         print("Filter plot saved")
     
     # create the window
-    global window
+    global window, window_norm
     window = hann(settings.N_Samp, sym=True)
+    window_av = np.average(window)
+    window_norm = window/window_av
 
     # Plot window
     if settings.DEBUG == True:
         plt.figure(2)
         plt.plot(window)
+        plt.plot(window_norm)
         plt.title("Hanning Window")
         plt.xlabel("Sample Number")
         plt.ylabel("Amplitude")
+        plt.legend("Hanning Window","Normalized Hanning Window")
         plt.grid()
         plt.savefig("./html/images/Window.jpg", dpi=150)
         plt.show()
@@ -151,7 +155,8 @@ def GetSpeed():
         plt.grid()
         plt.title("Filtered Signals")
         plt.xlabel("Time in s")
-        plt.savefig("./html/images/Filtered_Signals.jpg")
+        plt.legend(["I-Signal", "Q-Singal"])
+        plt.savefig("./html/images/Filtered_Signals.jpg", dpi=150)
         print("Filtered plot saved")
 
 
