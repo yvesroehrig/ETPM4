@@ -94,7 +94,7 @@ def Init():
         print("Window plot saved")
 
 def GetSpeed():
-
+    global I_sig, Q_sig
     t_samp = meas(ctypes.c_uint8(0),settings.N_Samp,I_sig,Q_sig)
 
     t = np.linspace(0,(t_samp/1000), settings.N_Samp)
