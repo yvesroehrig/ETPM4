@@ -22,3 +22,6 @@ calculations.Init()
 while(1):
     display.Set(test_value)
     display.Dimm(50)
+
+    # Measurement and calculation of speed
+    speed = calculations.GetSpeed()

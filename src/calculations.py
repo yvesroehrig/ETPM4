@@ -3,6 +3,7 @@
 # Imports
 import ctypes
 import time as time
+from turtle import speed
 import numpy as np
 from numpy.ctypeslib import ndpointer
 from scipy.fft import fft, fftshift, fftfreq
@@ -21,6 +22,19 @@ ld = c/fc
 # global variables
 global globalstartTime
 global localStartTime
+
+# C Functions
+so_file = "./test/adc2.so" # set the lib
+ADC = CDLL(so_file) # open lib
+meas = ADC.adc_meas
+meas.restype = ctypes.c_uint32 # set output type
+meas.argtypes =  [ctypes.c_uint8,
+                ctypes.c_uint16,
+                ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS"),
+                ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS")] # set input types
+    
+I_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
 
 # Initialisation for the calculations
 def Init():
@@ -79,41 +93,61 @@ def Init():
         plt.show()
         print("Window plot saved")
 
-def GetSpeed(I,Q):
+def GetSpeed():
+
+    t_samp = meas(ctypes.c_uint8(0),settings.N_Samp,I_sig,Q_sig)
+
+    t = np.linspace(0,(t_samp/1000), settings.N_Samp)
     # create time vector
-    t = np.linspace(0,TS,settings.N_Samp)
 
     # Plot input signal
     if settings.DEBUG == True:
         plt.figure(3)
-        plt.plot(t,I,t,Q)
+        plt.plot(t,I_sig,t,Q_sig)
         plt.grid()
         plt.title("Input Signal")
         plt.xlabel("Time in s")
         plt.ylabel("Voltage in V")
         plt.legend(["I-Signal", "Q-Singal"])
-        plt.savefig("./html/images/Input.jpg",dpi=100)
+        plt.savefig("./html/images/Input.jpg",dpi=150)
         print("Input plot saved")
 
     # calculate DC
-    DC_I = 1/settings.N_Samp * np.sum(I)
-    DC_Q = 1/settings.N_Samp * np.sum(Q)
+    DC_I = 1/settings.N_Samp * np.sum(I_sig)
+    DC_Q = 1/settings.N_Samp * np.sum(Q_sig)
 
     # remove DC
-    I = I - DC_I
-    Q = Q - DC_Q 
+    I_sig = I_sig - DC_I
+    Q_sig = Q_sig - DC_Q 
 
     # Plot DC-free signal
     if settings.DEBUG == True:
         plt.figure(4)
-        plt.plot(t,I,t,Q)
+        plt.plot(t,I_sig,t,Q_sig)
         plt.grid()
         plt.title("Input Signal with removed DC")
         plt.xlabel("Time in s")
         plt.ylabel("Voltage in V")
         plt.legend(["I-Signal", "Q-Singal"])
-        plt.savefig("./html/images/DC_free_input.jpg",dpi=100)
+        plt.savefig("./html/images/DC_free_input.jpg",dpi=150)
         print("DC-free plot saved")
+
+    # Filter the signal
+    I_filt = filtfilt(b,a,I_sig)
+    Q_filt = filtfilt(b,a,Q_sig)
+
+    if settings.DEBUG == True:
+        plt.figure(5)
+        plt.plot(t,I_filt,t,Q_sig)
+        plt.grid()
+        plt.title("Filtered Signals")
+        plt.xlabel("Time in s")
+        plt.savefig("Filtered_Signals.jpg")
+
+
+
+    speed = 30
+    return speed
     
 
 def demoSignal():
@@ -166,34 +200,34 @@ def demoSignal():
     return demoSig
     
 
-# create an i2c instance when file is in script mode
 if __name__ == "__main__":
     Init()
     #sig = demoSignal()
     # Calling the C-Function
-    so_file = "./test/adc2.so" # set the lib
-    ADC = CDLL(so_file) # open lib
-    meas = ADC.adc_meas
-    meas.restype = ctypes.c_uint32 # set output type
-    meas.argtypes =  [ctypes.c_uint8,
-                    ctypes.c_uint16,
-                    ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS"),
-                    ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS")] # set input types
+    # so_file = "./test/adc2.so" # set the lib
+    # ADC = CDLL(so_file) # open lib
+    # meas = ADC.adc_meas
+    # meas.restype = ctypes.c_uint32 # set output type
+    # meas.argtypes =  [ctypes.c_uint8,
+    #                 ctypes.c_uint16,
+    #                 ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS"),
+    #                 ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS")] # set input types
     
-    I_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
-    Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
-    t_samp = meas(ctypes.c_uint8(0),settings.N_Samp,I_sig,Q_sig)
-
-    t = np.linspace(0,(t_samp/1000), settings.N_Samp)
+    # I_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+    # Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+   
+    # t_samp = meas(ctypes.c_uint8(0),settings.N_Samp,I_sig,Q_sig)
+    # t = np.linspace(0,(t_samp/1000), settings.N_Samp)
+   
     # shift values
-    print(Q_sig[0:15])
-    print(I_sig[0:15])
-    print("Sampling time: " + str(float(t_samp)/1000) + "ms")
-    plt.figure(100)
-    plt.plot(t/1000,Q_sig,t/1000,I_sig)
-    plt.grid()
-    plt.savefig("test.jpg", dpi = 100)
-    print("input plotted")
-    #GetSpeed(Q_sig,I_sig)
+    # print(Q_sig[0:])
+    # print(I_sig[0:])
+    # print("Sampling time: " + str(float(t_samp)/1000) + "ms")
+    # plt.figure(100)
+    # plt.plot(t/1000,Q_sig,t/1000,I_sig)
+    # plt.grid()
+    # plt.savefig("test.jpg", dpi = 100)
+    # print("input plotted")
+    GetSpeed()
     #print("Script finished")
     
