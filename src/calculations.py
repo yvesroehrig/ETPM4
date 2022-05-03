@@ -38,8 +38,11 @@ Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
 
 # Initialisation for the calculations
 def Init():
-    # Calculating measuring Parameters
+    # start timer
     global localStartTime
+    localStartTime = time.time()
+
+    # Calculating measuring Parameters
     globalStartTime = time.time()
     global wFs,DT,TS
     wFs = settings.Fs*2*np.pi    # circular sampling frequency
@@ -52,11 +55,8 @@ def Init():
         print("circular sampling frequency: " + str(wFs))
         print("Time per sample: " + str(DT))
         print("Sampling Time: " + str(TS))
-        stopTime = time.time()
-        print("Parameter Time:" + str(stopTime-globalStartTime))
 
     # calculate the digital filter
-    localStartTime = time.time()
     global b,a
     b,a = butter(10, np.multiply([400, ((settings.Fs/2)-1)], 2*np.pi), btype="band", fs=(settings.Fs*2*np.pi), output='ba', analog=False)
     
@@ -92,6 +92,10 @@ def Init():
         plt.savefig("./html/images/Window.jpg", dpi=150)
         plt.show()
         print("Window plot saved")
+    
+        stopTime = time.time()
+        print("Init Time:" + str(stopTime-globalStartTime))
+
 
 def GetSpeed():
     global I_sig, Q_sig
@@ -142,7 +146,8 @@ def GetSpeed():
         plt.grid()
         plt.title("Filtered Signals")
         plt.xlabel("Time in s")
-        plt.savefig("Filtered_Signals.jpg")
+        plt.savefig("./html/images/Filtered_Signals.jpg")
+        print("Filtered plot saved")
 
 
 
