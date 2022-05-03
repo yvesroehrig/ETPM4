@@ -199,6 +199,7 @@ def demoSignal():
 
     if settings.DEBUG == True:
         # Plot of the Signal
+        plt.figure(200)
         plt.plot(t,I,t,Q)
         plt.grid()
         plt.title("Input Signal")
