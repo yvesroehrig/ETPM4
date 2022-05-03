@@ -91,7 +91,7 @@ def Init():
         plt.title("Hanning Window")
         plt.xlabel("Sample Number")
         plt.ylabel("Amplitude")
-        plt.legend("Hanning Window","Normalized Hanning Window")
+        plt.legend(["Hanning Window","Normalized Hanning Window"])
         plt.grid()
         plt.savefig("./html/images/Window.jpg", dpi=150)
         plt.show()
