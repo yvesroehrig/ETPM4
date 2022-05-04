@@ -25,3 +25,5 @@ while(1):
 
     # Measurement and calculation of speed
     speed = calculations.GetSpeed()
+    intspeed = int(speed)
+    display.Set(intspeed)
