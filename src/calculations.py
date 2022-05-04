@@ -70,7 +70,7 @@ def Init():
         plt.xlabel('Frequency [Hz]')
         plt.ylabel('Amplitude [dB]')
         plt.grid(which='both', axis='both')
-        plt.margins(0, 0.1)
+        plt.margins(0.1)
         plt.axvline(400, color='green') # highpass frequency
         plt.axvline(((settings.Fs/2)-50), color='green') # lowpass frequency
         plt.legend(["Frequency response","Pass Band"])
@@ -103,10 +103,14 @@ def Init():
 
 
 def GetSpeed():
+    # start time measurement
+    global localStartTime
+    localStartTime = time.time()
+
     global I_sig, Q_sig
     t_samp = meas(ctypes.c_uint8(0),settings.N_Samp,I_sig,Q_sig)
 
-    t = np.linspace(0,(t_samp/1000), settings.N_Samp)
+    t = np.linspace(0,(t_samp/1e6), settings.N_Samp)
     # create time vector
 
     # Demo Signal
@@ -120,10 +124,14 @@ def GetSpeed():
         plt.grid()
         plt.title("Input Signal")
         plt.xlabel("Time in s")
-        plt.ylabel("Voltage in V")
+        plt.ylabel("Voltage in mV")
         plt.legend(["I-Signal", "Q-Singal"])
         plt.savefig("./html/images/Input.jpg",dpi=150)
         print("Input plot saved")
+
+    # convert from mV to V
+    I_sig = I_sig/1000
+    Q_sig = Q_sig/1000
 
     # calculate DC
     DC_I = 1/settings.N_Samp * np.sum(I_sig)
@@ -162,20 +170,51 @@ def GetSpeed():
 
     # Apply the Window
     I_filt = I_filt*window_norm
-    I_filt = I_filt*window_norm
+    Q_filt = Q_filt*window_norm
 
     if settings.DEBUG == True:
         # apply the Window
+        plt.figure(6)
         I_filt = np.multiply(window,I_filt)
         Q_filt = np.multiply(window,Q_filt) 
         plt.plot(t,I_filt,t,Q_filt)
         plt.grid(minor)
         plt.title("Filtered and windowed Signal")
         plt.legend(["I-Signal", "Q-Singal"])
-        plt.savefig("filtered_windowed.jpg", dpi=150)
+        plt.savefig("./html/images/filtered_windowed.jpg", dpi=150)
+        print("Windowed Signal saved")
 
-    speed = 30
-    return speed
+    # Combining I and Q signal
+    z_t = I_filt + Q_filt * 1j
+
+    # Perform the FFT
+    z_f = fftshift(fft(z_t,norm='forward'))
+    x_f = fftshift(fftfreq(settings.N_Samp,((t_samp/1e6)/settings.N_Samp)))
+    z_f_abs = np.abs(z_f)
+
+    if settings.DEBUG == True:
+        # Plot the FFT
+        plt.figure(7)
+        plt.plot((x_f),z_f_abs,'*')
+        plt.grid()
+        plt.title("FFT")
+        plt.xlabel("Frequency [Hz]")
+        plt.ylabel("|Signal|")
+        plt.savefig("./html/images/FFT.jpg",dpi=150)
+        print("FFT plot saved")
+
+    # calculate speed
+    n_max = np.argmax(z_f_abs)
+    max_f = x_f[n_max-1]
+    print("n Max: " + str(n_max) + "; max f:" + str(max_f))
+    v = 3.6*max_f/2*ld
+    print("Simulated Speed: "+ str(v))
+
+    # stop time measurement and print
+    stopTime = time.time()
+    print("Measurement and Calculation Time:" + str(stopTime-localStartTime))
+
+    return v
     
 
 def demoSignal():
