@@ -26,4 +26,4 @@ while(1):
 
     # display measured speed at display
     display.Set(test_value)
-    display.Dimm(50)
+    display.Dimm(50, True)
