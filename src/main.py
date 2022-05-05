@@ -27,3 +27,8 @@ while(1):
     # display measured speed at display
     display.Set(test_value)
     display.Dimm(50, True)
+
+    # Measurement and calculation of speed
+    speed = calculations.GetSpeed()
+    intspeed = int(speed)
+    display.Set(intspeed)
