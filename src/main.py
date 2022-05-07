@@ -5,18 +5,19 @@
 
 # add used files
 import display
-#import calculations
+import calculations
 import settings
+import time
 
 # test variables
 test_value = 12
 
-# create an i2c instance
-#i2c = smbus2.SMBus(1)
-
 # initialisation of the system
 display.Init()
-#calculations.Init()
+calculations.Init()
+
+# initial values
+display.Set(test_value)
 
 # infined loop
 while(1):
@@ -25,10 +26,13 @@ while(1):
     # get button state
 
     # display measured speed at display
-    display.Set(test_value)
-    display.Dimm(50, True)
+    display.Dimm(100, False)
+    time.sleep(0.1)
 
     # Measurement and calculation of speed
     speed = calculations.GetSpeed()
     intspeed = int(speed)
+    print(intspeed)
     display.Set(intspeed)
+    
+    time.sleep(1)
