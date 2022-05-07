@@ -1,16 +1,27 @@
 #  add used librarys
 import smbus2
 import RPi.GPIO as GPIO
+#import numpy as np
+import settings
+import time
+
+# global variables
+global toggle
+toggle = False
+global isvalue
+isvalue = 0
+global reftime
+reftime = 0
 
 # variables
-pwm_pin = 12 # referece at gpio pinout diagram
-pwm_frequency = 500	# Hz
+#pwm_pin = 12 # referece at gpio pinout diagram
+#pwm_frequency = 500	# Hz
 
 # setup GPIO for pwm
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(pwm_pin, GPIO.OUT)
+GPIO.setup(settings.PWM_PIN, GPIO.OUT)
 
-p = GPIO.PWM(pwm_pin, pwm_frequency)
+p = GPIO.PWM(settings.PWM_PIN, settings.PWM_FREQUENCY)
 p.start(0)
 
 # create an i2c instance when file is in script mode
@@ -19,8 +30,8 @@ p.start(0)
 i2c = smbus2.SMBus(1)
 
 # i2c address of the seven segment displays
-display_10e0 = 0x20	# 1s digit
-display_10e1 = 0x24	# 10s digit
+display_10e0 = 0x21	# 1s digit
+display_10e1 = 0x20	# 10s digit
 
 # MCP23008 register address
 mcp_conf_reg = 0b00000000
@@ -49,11 +60,41 @@ def Test():
 
 # write new value to the segment displays
 def Set(set_value):
-	#if(isvalue != set_value):
-	i2c.write_byte_data(display_10e0, mcp_gpio_reg, segment[Digit(set_value, 1)])	# display value on the 10e0 digit
-	i2c.write_byte_data(display_10e1, mcp_gpio_reg, segment[Digit(set_value, 10)])	# display value on the 10e1 digit
-	#isvalue = set_value
+	global isvalue
+	# write the current value only on the displays if it differs from the previous one
+	if(isvalue != set_value):
+		i2c.write_byte_data(display_10e0, mcp_gpio_reg, segment[Digit(set_value, 1)])	# display value on the 10e0 digit
+		i2c.write_byte_data(display_10e1, mcp_gpio_reg, segment[Digit(set_value, 10)])	# display value on the 10e1 digit
+		isvalue = set_value
 
 # dimm the segments
-def Dimm(dimm):
-	p.ChangeDutyCycle(dimm)
+def Dimm(dimm, flash=False):
+	global toggle
+	global reftime
+	if(flash):
+		# toggle display on and off
+		if(toggle):
+			if((time.time() - reftime) >= settings.FLASH_TIME):
+				p.ChangeDutyCycle(0)
+				reftime = time.time()
+				toggle = not toggle
+		else:
+			if((time.time() - reftime) >= settings.FLASH_TIME):
+				p.ChangeDutyCycle(dimm)
+				reftime = time.time()
+				toggle = not toggle
+
+	else:
+		p.ChangeDutyCycle(dimm)
+
+def AmbientLightControl(adcValue):
+	maxPWMvalue = 100 # in %
+	maxADCvalue = 4500 # in mV
+
+	# segment to ambient light linear
+	PWMvalue = (maxPWMvalue/maxADCvalue)*adcValue
+
+	# segment to ambient light exponential
+	# PWMvalue = maxPWMvalue * (1 - np.exp(-(1/maxADCvalue)*adcValue))
+
+	return PWMvalue

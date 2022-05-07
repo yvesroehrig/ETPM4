@@ -12,9 +12,6 @@ import time
 # test variables
 test_value = 12
 
-# create an i2c instance
-#i2c = smbus2.SMBus(1)
-
 # initialisation of the system
 display.Init()
 calculations.Init()
