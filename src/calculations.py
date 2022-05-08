@@ -23,6 +23,8 @@ ld = c/fc
 global globalstartTime
 global localStartTime
 global TS
+global speed_array
+speed_array = [0]
 
 # C Functions
 so_file = "./test/adc2.so" # set the lib
@@ -227,11 +229,12 @@ def GetSpeed():
     print("Measured Speed: "+ str(v))
 
     # speed array
-    speed_array = np.append(v)
+    global speed_array
+    speed_array.append(v)
     if settings.SPEED_GRAPH == True:
         plt.figure(8)
         plt.clf()
-        plt.plot(v)
+        plt.plot(speed_array,'*')
         plt.grid()
         plt.title("Measured Speeds")
         plt.savefig("./html/images/Speed_graph.jpg",dpi=150)

@@ -14,7 +14,7 @@ def Init():
     i2c.write_byte_data(PGA_ADDR,0x00,0x00)
 
     #send config and start Gain
-    i2c.write_byte_data(PGA_ADDR,PGA_REG,0x03)
+    i2c.write_byte_data(PGA_ADDR,PGA_REG,0x05)
 
 
 def adjust_gain():
