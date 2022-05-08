@@ -1,3 +1,17 @@
+/**
+ * @file adc2.c
+ * @author Müller Pavel
+ * @brief Lib file for adc Measuring over i2c on a raspberrypi
+ * @version 0.1
+ * @date 2022-05-07
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ * compile with following command:"cc -fPIC -shared -o test/adc2.so test/adc2.c -li2c"
+ */
+
+#define PY_SSIZE_T_CLEAN
+
 #include <stdio.h>
 #include <linux/i2c-dev.h>
 #include <linux/i2c.h>
@@ -26,7 +40,7 @@ uint32_t adc_meas(uint8_t CH, uint16_t N_samp, uint16_t *data_ADC1, uint16_t *da
   //static uint16_t data_ADC[2*NUM_PT] = {0};
   uint16_t data [2] = {0};
   uint32_t t_samp;
-  struct timeval t1, t2;
+  struct timeval t1, t2, t3, t4;
   long long elapsedTime;
 
   // open I2C Bus
@@ -84,12 +98,17 @@ uint32_t adc_meas(uint8_t CH, uint16_t N_samp, uint16_t *data_ADC1, uint16_t *da
 
   t_samp = (uint32_t)elapsedTime;
 
+  //close files
+  close(file_i2c_ADC1);
+  close(file_i2c_ADC2);
+  close(file_i2c_BRDC);
+
   //shift values
   for(int i=0;i<N_samp;i++){
     data_ADC1[i] = ((data_ADC1[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC1[i] & MASK_LOWER_BYTE)<<4);
     data_ADC2[i] = ((data_ADC2[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC2[i] & MASK_LOWER_BYTE)<<4);
     //printf("ADC1: %u ADC2: %u\n", data_ADC1[i],data_ADC2[i]);
   }
-
+  printf("C-Time: %u\n",t_samp);
   return t_samp;
 }

@@ -2,17 +2,16 @@
 
 # Imports
 import ctypes
-from os import minor
 import time as time
-from turtle import speed
 import numpy as np
 from numpy.ctypeslib import ndpointer
 from scipy.fft import fft, fftshift, fftfreq
-from scipy.signal import hann, butter, filtfilt, lfilter
+from scipy.signal import hann, butter, filtfilt
 from scipy import signal
 import matplotlib.pyplot as plt
 import settings
 from ctypes import *
+import gc
 
 
 # Constants
@@ -121,7 +120,7 @@ def GetSpeed():
     # Demo Signal
     if settings.DEMO == True:
         I_sig, Q_sig = demoSignal()
-        t = np.linspace(0,DT,settings.N_Samp)
+        t = np.linspace(0,TS,settings.N_Samp)
     # Plot input signal
     if settings.DEBUG == True:
         plt.figure(3)
@@ -187,7 +186,6 @@ def GetSpeed():
         I_filt = np.multiply(window,I_filt)
         Q_filt = np.multiply(window,Q_filt) 
         plt.plot(t,I_filt,t,Q_filt)
-        plt.grid(minor)
         plt.title("Filtered and windowed Signal")
         plt.legend(["I-Signal", "Q-Singal"])
         plt.savefig("./html/images/filtered_windowed.jpg", dpi=150)
@@ -229,6 +227,9 @@ def GetSpeed():
     stopTime = time.time()
     print("Measurement and Calculation Time:" + str(stopTime-localStartTime))
 
+    del(I_filt,Q_filt,I_sig,Q_sig,z_f,z_f_abs,z_t)
+    gc.collect()
+
     return v
     
 
@@ -238,7 +239,7 @@ def demoSignal():
     t = np.linspace(0,TS,settings.N_Samp) # time vector
 
     # main Signal
-    f1 = 1600                   # Frequency for the demo signal
+    f1 = 1000                   # Frequency for the demo signal
     w1 = 2*np.pi*f1             # circular frequency
     A1 = 2.500                  # Amplitude
     DC = 2.5                    # DC value
@@ -256,7 +257,7 @@ def demoSignal():
     # noise 2
     # 50Hz
     fn2 = 50
-    wn2 = 2*np.pi*fn1
+    wn2 = 2*np.pi*fn2
     An2 = 0.100
     In2 = An2*np.cos(wn2*t)
 
@@ -287,4 +288,6 @@ def demoSignal():
 
 if __name__ == "__main__":
     Init()
-    GetSpeed()
+    while(1):
+        GetSpeed()
+    

@@ -18,18 +18,19 @@
 #define ADC2 0x09
 #define CH0 0x88
 #define CH1 0xC8
-#define NUM_PT 1024
+#define N_samp 1024
 #define BROADCAST 0x6B
 
 int main(void){
   // variables
   int file_i2c_ADC1, file_i2c_ADC2, file_i2c_BRDC, length = 2;
-  uint16_t data_ADC1[NUM_PT] = {0};
-  uint16_t data_ADC2[NUM_PT] = {0};
+  uint16_t data_ADC1[N_samp] = {0};
+  uint16_t data_ADC2[N_samp] = {0};
   uint16_t data [2] = {0};
-
+  uint8_t CH = 0;
   struct timeval t1, t2;
   long long elapsedTime;
+  uint32_t t_samp;
 
   // open I2C Bus
   char *filename = (char*)"/dev/i2c-1";
@@ -58,34 +59,40 @@ int main(void){
   }
 
   // write config
-  data [0] = CH1;
+  switch(CH){
+    case 0: data [0] = CH0;
+      break;
+    case 1: data [0] = CH1;
+      break;
+    default:
+      break;
+  }
+
   if((write(file_i2c_ADC1, data, 1) != 1) || (write(file_i2c_ADC2, data, 1) != 1)){
   printf("Failed to write to the i2c Bus.\n");
   }
 
-  while(1){
+  while(1){  
     // read bytes
     gettimeofday(&t1, NULL);
-    for(int i=0;i<NUM_PT;i++){
-      //write(file_i2c_BRDC, data, 1);
-      //i2c_smbus_write_byte(file_i2c_BRDC,data[0]);
+    for(int i=0;i<N_samp;i++){
       i2c_smbus_write_quick(0x6b,0x0);
-      //i2c_smbus_write_quick(file_i2c_BRDC,0x0);
-      //close(file_i2c_BRDC);
       read(file_i2c_ADC1, data_ADC1 + i, length);
       read(file_i2c_ADC2, data_ADC2 + i, length);
     }
-    
+      
     gettimeofday(&t2, NULL);
     elapsedTime = ((t2.tv_sec * 1000000) + t2.tv_usec)- ((t1.tv_sec * 1000000) + t1.tv_usec);
     printf("Elapsed Time: %lld\n",elapsedTime);
 
-    // print data
-    for(int i=0;i<16;i++){
+    t_samp = (uint32_t)elapsedTime;
+
+    //shift values
+    for(int i=0;i<N_samp;i++){
       data_ADC1[i] = ((data_ADC1[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC1[i] & MASK_LOWER_BYTE)<<4);
       data_ADC2[i] = ((data_ADC2[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC2[i] & MASK_LOWER_BYTE)<<4);
-      printf("Value %u ADC1: %u ADC2: %u\n",i+1,data_ADC1[i],data_ADC2[i]);
+      //printf("ADC1: %u ADC2: %u\n", data_ADC1[i],data_ADC2[i]);
     }
-    printf("No Error\n END OF FILE!\n");
+    printf("C-Time: %u\n",t_samp);
   }
 }

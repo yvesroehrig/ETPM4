@@ -26,7 +26,6 @@ while(1):
     # get button state
 
     # display measured speed at display
-    display.Dimm(100, False)
     time.sleep(0.1)
 
     # Measurement and calculation of speed
@@ -34,5 +33,7 @@ while(1):
     intspeed = int(speed)
     print(intspeed)
     display.Set(intspeed)
+    display.Dimm(50, True)
+
     
     time.sleep(1)
