@@ -226,6 +226,16 @@ def GetSpeed():
     v = -3.6*max_f/2*ld
     print("Measured Speed: "+ str(v))
 
+    # speed array
+    speed_array = np.append(v)
+    if settings.SPEED_GRAPH == True:
+        plt.figure(8)
+        plt.clf()
+        plt.plot(v)
+        plt.grid()
+        plt.title("Measured Speeds")
+        plt.savefig("./html/images/Speed_graph.jpg",dpi=150)
+
     # stop time measurement and print
     stopTime = time.time()
     print("Measurement and Calculation Time:" + str(stopTime-localStartTime))
