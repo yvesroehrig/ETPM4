@@ -2,7 +2,7 @@
 from socket import TCP_NODELAY
 from wsgiref.simple_server import demo_app
 
-DEBUG       = True  # Debug on/off
+DEBUG       = False  # Debug on/off
 DEMO        = False  # Demo on/off
 Fs          = 9000 # Sampling frequency
 N_Samp      = 1024   # Number of Samples
