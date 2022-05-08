@@ -7,6 +7,7 @@
 import display
 import calculations
 import settings
+import pga
 import time
 
 # test variables
@@ -15,14 +16,13 @@ test_value = 12
 # initialisation of the system
 display.Init()
 calculations.Init()
+pga.Init()
 
 # initial values
 display.Set(test_value)
 
 # infined loop
 while(1):
-    # get adc data
-
     # get button state
 
     # display measured speed at display

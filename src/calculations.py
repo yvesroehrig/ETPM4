@@ -108,7 +108,8 @@ def GetSpeed():
     global localStartTime
     localStartTime = time.time()
 
-   # global I_sig, Q_sig
+    # global I_sig, Q_sig
+    global I_sig, Q_sig
     I_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
     Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
 
@@ -197,11 +198,13 @@ def GetSpeed():
     # Perform the FFT
     z_f = fftshift(fft(z_t,norm='forward'))
 
+    # Perform the FFT-shift
     if settings.DEMO == False:
         x_f = fftshift(fftfreq(settings.N_Samp,((t_samp/1e6)/settings.N_Samp)))
     if settings.DEMO == True:
         x_f = fftshift(fftfreq(settings.N_Samp,DT))
 
+    # Calculate absolute valus
     z_f_abs = np.abs(z_f)
 
     if settings.DEBUG == True:
@@ -227,7 +230,7 @@ def GetSpeed():
     stopTime = time.time()
     print("Measurement and Calculation Time:" + str(stopTime-localStartTime))
 
-    del(I_filt,Q_filt,I_sig,Q_sig,z_f,z_f_abs,z_t)
+    # Garbage collector
     gc.collect()
 
     return v
