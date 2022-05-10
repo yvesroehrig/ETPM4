@@ -2,17 +2,16 @@
 
 # Imports
 import ctypes
-from os import minor
 import time as time
-from turtle import speed
 import numpy as np
 from numpy.ctypeslib import ndpointer
 from scipy.fft import fft, fftshift, fftfreq
-from scipy.signal import hann, butter, filtfilt, lfilter
+from scipy.signal import hann, butter, filtfilt
 from scipy import signal
 import matplotlib.pyplot as plt
 import settings
 from ctypes import *
+import gc
 
 
 # Constants
@@ -23,6 +22,9 @@ ld = c/fc
 # global variables
 global globalstartTime
 global localStartTime
+global TS
+global speed_array
+speed_array = [0]
 
 # C Functions
 so_file = "./test/adc2.so" # set the lib
@@ -34,8 +36,7 @@ meas.argtypes =  [ctypes.c_uint8,
                 ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS"),
                 ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS")] # set input types
     
-I_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
-Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+#Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
 
 # Initialisation for the calculations
 def Init():
@@ -65,6 +66,7 @@ def Init():
     if settings.DEBUG == True:
         w,h = signal.freqz(b,a, worN=settings.N_Samp,fs=wFs)
         plt.figure(1)
+        plt.clf()
         plt.semilogx(w/(2*np.pi),20*np.log10(abs(h)))
         plt.title('Butterworth filter frequency response')
         plt.xlabel('Frequency [Hz]')
@@ -87,6 +89,7 @@ def Init():
     # Plot window
     if settings.DEBUG == True:
         plt.figure(2)
+        plt.clf()
         plt.plot(window)
         plt.plot(window_norm)
         plt.title("Hanning Window")
@@ -107,8 +110,12 @@ def GetSpeed():
     global localStartTime
     localStartTime = time.time()
 
+    # global I_sig, Q_sig
     global I_sig, Q_sig
-    t_samp = meas(ctypes.c_uint8(0),settings.N_Samp,I_sig,Q_sig)
+    I_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+    Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+
+    t_samp = meas(ctypes.c_uint8(0),ctypes.c_uint16(settings.N_Samp),I_sig,Q_sig)
 
     t = np.linspace(0,(t_samp/1e6), settings.N_Samp)
     # create time vector
@@ -116,10 +123,11 @@ def GetSpeed():
     # Demo Signal
     if settings.DEMO == True:
         I_sig, Q_sig = demoSignal()
-    
+        t = np.linspace(0,TS,settings.N_Samp)
     # Plot input signal
     if settings.DEBUG == True:
         plt.figure(3)
+        plt.clf()
         plt.plot(t,I_sig,t,Q_sig)
         plt.grid()
         plt.title("Input Signal")
@@ -144,6 +152,7 @@ def GetSpeed():
     # Plot DC-free signal
     if settings.DEBUG == True:
         plt.figure(4)
+        plt.clf()
         plt.plot(t,I_sig,t,Q_sig)
         plt.grid()
         plt.title("Input Signal with removed DC")
@@ -160,6 +169,7 @@ def GetSpeed():
 
     if settings.DEBUG == True:
         plt.figure(5)
+        plt.clf()
         plt.plot(t,I_filt,t,Q_filt)
         plt.grid()
         plt.title("Filtered Signals")
@@ -175,10 +185,10 @@ def GetSpeed():
     if settings.DEBUG == True:
         # apply the Window
         plt.figure(6)
+        plt.clf()
         I_filt = np.multiply(window,I_filt)
         Q_filt = np.multiply(window,Q_filt) 
         plt.plot(t,I_filt,t,Q_filt)
-        plt.grid(minor)
         plt.title("Filtered and windowed Signal")
         plt.legend(["I-Signal", "Q-Singal"])
         plt.savefig("./html/images/filtered_windowed.jpg", dpi=150)
@@ -189,12 +199,20 @@ def GetSpeed():
 
     # Perform the FFT
     z_f = fftshift(fft(z_t,norm='forward'))
-    x_f = fftshift(fftfreq(settings.N_Samp,((t_samp/1e6)/settings.N_Samp)))
+
+    # Perform the FFT-shift
+    if settings.DEMO == False:
+        x_f = fftshift(fftfreq(settings.N_Samp,((t_samp/1e6)/settings.N_Samp)))
+    if settings.DEMO == True:
+        x_f = fftshift(fftfreq(settings.N_Samp,DT))
+
+    # Calculate absolute valus
     z_f_abs = np.abs(z_f)
 
     if settings.DEBUG == True:
         # Plot the FFT
         plt.figure(7)
+        plt.clf()
         plt.plot((x_f),z_f_abs,'*')
         plt.grid()
         plt.title("FFT")
@@ -204,25 +222,40 @@ def GetSpeed():
         print("FFT plot saved")
 
     # calculate speed
-    n_max = np.argmax(z_f_abs)
+    n_max = np.argmax(z_f_abs[0:int((settings.N_Samp/2)-1)])
     max_f = x_f[n_max-1]
     print("n Max: " + str(n_max) + "; max f:" + str(max_f))
-    v = 3.6*max_f/2*ld
-    print("Simulated Speed: "+ str(v))
+    v = -3.6*max_f/2*ld
+    print("Measured Speed: "+ str(v))
+
+    # speed array
+    global speed_array
+    speed_array.append(v)
+    if settings.SPEED_GRAPH == True:
+        plt.figure(8)
+        plt.clf()
+        plt.plot(speed_array,'*')
+        plt.grid()
+        plt.title("Measured Speeds")
+        plt.savefig("./html/images/Speed_graph.jpg",dpi=150)
 
     # stop time measurement and print
     stopTime = time.time()
     print("Measurement and Calculation Time:" + str(stopTime-localStartTime))
 
+    # Garbage collector
+    gc.collect()
+
     return v
     
 
 def demoSignal():
+    global TS
     # demo signal
     t = np.linspace(0,TS,settings.N_Samp) # time vector
 
     # main Signal
-    f1 = 500                   # Frequency for the demo signal
+    f1 = 1000                   # Frequency for the demo signal
     w1 = 2*np.pi*f1             # circular frequency
     A1 = 2.500                  # Amplitude
     DC = 2.5                    # DC value
@@ -240,18 +273,19 @@ def demoSignal():
     # noise 2
     # 50Hz
     fn2 = 50
-    wn2 = 2*np.pi*fn1
+    wn2 = 2*np.pi*fn2
     An2 = 0.100
     In2 = An2*np.cos(wn2*t)
 
     # Signal
-    I = I1 + In1 + In2 # Signal I
-    Q = Q1 + In1 + In2 # Signal Q
+    I = 1000*(I1 + In1 + In2) # Signal I
+    Q = 1000*(Q1 + In1 + In2) # Signal Q
     # y= I + Q1*1j
 
     if settings.DEBUG == True:
         # Plot of the Signal
         plt.figure(200)
+        plt.clf()
         plt.plot(t,I,t,Q)
         plt.grid()
         plt.title("Input Signal")
@@ -270,32 +304,6 @@ def demoSignal():
 
 if __name__ == "__main__":
     Init()
-    #sig = demoSignal()
-    # Calling the C-Function
-    # so_file = "./test/adc2.so" # set the lib
-    # ADC = CDLL(so_file) # open lib
-    # meas = ADC.adc_meas
-    # meas.restype = ctypes.c_uint32 # set output type
-    # meas.argtypes =  [ctypes.c_uint8,
-    #                 ctypes.c_uint16,
-    #                 ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS"),
-    #                 ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS")] # set input types
-    
-    # I_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
-    # Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
-   
-    # t_samp = meas(ctypes.c_uint8(0),settings.N_Samp,I_sig,Q_sig)
-    # t = np.linspace(0,(t_samp/1000), settings.N_Samp)
-   
-    # shift values
-    # print(Q_sig[0:])
-    # print(I_sig[0:])
-    # print("Sampling time: " + str(float(t_samp)/1000) + "ms")
-    # plt.figure(100)
-    # plt.plot(t/1000,Q_sig,t/1000,I_sig)
-    # plt.grid()
-    # plt.savefig("test.jpg", dpi = 100)
-    # print("input plotted")
-    GetSpeed()
-    #print("Script finished")
+    while(1):
+        GetSpeed()
     
