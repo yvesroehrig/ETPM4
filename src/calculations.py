@@ -300,6 +300,19 @@ def demoSignal():
     demoSig[:,1] = Q
 
     return I,Q
+
+def GetLightAndCurrent():
+    
+    light = np.ascontiguousarray(np.empty(settings.N_OPT_Samp, dtype=ctypes.c_uint16))
+    current = np.ascontiguousarray(np.empty(settings.N_OPT_Samp, dtype=ctypes.c_uint16))
+
+    meas_time = meas(ctypes.c_uint8(1),ctypes.c_uint16(settings.N_OPT_Samp),current,light)
+
+    light_av = np.average(light)
+    current_av = np.average(current)
+
+    return current_av,light_av
+
     
 
 if __name__ == "__main__":

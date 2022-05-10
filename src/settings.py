@@ -12,3 +12,6 @@ f_band_high = (Fs/2)-50 # Higher frequency for bandpass at half
 FLASH_TIME		= 1		# Flashing time in seconds when speed exceeded
 PWM_PIN			= 12	# referece at gpio pinout diagram
 PWM_FREQUENCY	= 500	# Hz
+
+# optional parameters
+N_OPT_Samp = 32			# number of samples for light and current measurement
