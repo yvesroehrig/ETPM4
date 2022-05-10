@@ -8,6 +8,7 @@ import display
 import button
 #import calculations
 import settings
+import time
 
 # test variables
 test_value = 65
@@ -21,6 +22,10 @@ try:
 	button.Init()
 	#calculations.Init()
 
+	display.Dimm(100, False)
+	display.Test()
+	time.sleep(2)
+
 	# infined loop
 	while(1):
 		# Measurement and calculation of speed
@@ -32,13 +37,13 @@ try:
 
 		# display measured speed at display
 		display.Set(test_value)
+
 		if(button.GetSpeedLimit() < test_value):
 			display.Dimm(50, True)
 		else:
 			display.Dimm(50, False)
 
-
-		# display.Set(intspeed)
+		time.sleep(0.5)
 
 except KeyboardInterrupt:
 	display.Deinit()

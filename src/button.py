@@ -3,14 +3,6 @@ import smbus2
 import settings
 
 # global variables
-# global button0; button0 = False
-# global button1; button1 = False
-# global button2; button2 = False
-# global button3; button3 = False
-# global button4; button4 = False
-# global button5; button5 = False
-# global button6; button6 = False
-# global button7; button7 = False
 global button; button = [0,0,0,0,0,0,0,0]
 global speedLimit; speedLimit = 200
 
@@ -38,6 +30,7 @@ def GetInput():
 
 def GetSpeedLimit():
     global speedLimit
+    global button
     
     if(button[0]):
         speedLimit = 20
@@ -47,7 +40,5 @@ def GetSpeedLimit():
         speedLimit = 50
     elif(button[3]):
         speedLimit = 80
-    else:
-        speedLimit = 200
     
     return speedLimit
