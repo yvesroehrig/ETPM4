@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import settings
 from ctypes import *
 import gc
+import platform
 
 
 # Constants
@@ -27,7 +28,10 @@ global speed_array
 speed_array = [0]
 
 # C Functions
-so_file = "./test/adc2.so" # set the lib
+if(platform.machine() == 'armv6l'):
+    so_file = "./test/adc2_zero1.so" # set the lib
+else:
+    so_file = "./test/adc2.so" # set the lib
 ADC = CDLL(so_file) # open lib
 meas = ADC.adc_meas
 meas.restype = ctypes.c_uint32 # set output type
