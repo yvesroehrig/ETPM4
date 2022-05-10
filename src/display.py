@@ -1,32 +1,23 @@
 #  add used librarys
 import smbus2
 import RPi.GPIO as GPIO
-#import numpy as np
+import numpy as np
 import settings
 import time
 
 # global variables
-global toggle
-toggle = False
-global isvalue
-isvalue = 0
-global reftime
-reftime = 0
+global toggle; toggle = False
+global isvalue; isvalue = 0
+global reftime; reftime = 0
 
 # variables
-#pwm_pin = 12 # referece at gpio pinout diagram
-#pwm_frequency = 500	# Hz
 
 # setup GPIO for pwm
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(settings.PWM_PIN, GPIO.OUT)
-
 p = GPIO.PWM(settings.PWM_PIN, settings.PWM_FREQUENCY)
-p.start(0)
 
-# create an i2c instance when file is in script mode
-#if __name__ == "__main__":
-
+# create an i2c instance
 i2c = smbus2.SMBus(1)
 
 # i2c address of the seven segment displays
@@ -48,10 +39,20 @@ def Digit(number, digit):
 	temp = number % (digit * 10)
 	return int(temp / digit)
 
-# initialisation and configuration of the I/O expander
+# initialisation and configuration of the I/O expander and PWM
 def Init():
+	p.start(0)
 	i2c.write_byte_data(display_10e0, 0x00, 0x00)	# Configure all pins as output
 	i2c.write_byte_data(display_10e1, 0x00, 0x00)	# Configure all pins as output
+
+# deinitialisation of the I/O expander and PWM
+def Deinit():
+	i2c.write_byte_data(display_10e0,0x09,0x00)
+	i2c.write_byte_data(display_10e1,0x09,0x00)
+	i2c.write_byte_data(display_10e0,0x00,0xFF)
+	i2c.write_byte_data(display_10e1,0x00,0xFF)
+	p.stop()
+	GPIO.cleanup()
 
 # set all outputs high to test each segment
 def Test():
@@ -63,9 +64,18 @@ def Set(set_value):
 	global isvalue
 	# write the current value only on the displays if it differs from the previous one
 	if(isvalue != set_value):
-		i2c.write_byte_data(display_10e0, mcp_gpio_reg, segment[Digit(set_value, 1)])	# display value on the 10e0 digit
-		i2c.write_byte_data(display_10e1, mcp_gpio_reg, segment[Digit(set_value, 10)])	# display value on the 10e1 digit
-		isvalue = set_value
+		if(set_value == 0):
+			i2c.write_byte_data(display_10e0, mcp_gpio_reg, 0x00)	# display value on the 10e0 digit
+			i2c.write_byte_data(display_10e1, mcp_gpio_reg, 0x00)	# display value on the 10e1 digit
+			isvalue = set_value
+		elif(set_value < 10):
+			i2c.write_byte_data(display_10e0, mcp_gpio_reg, segment[Digit(set_value, 1)])	# display value on the 10e0 digit
+			i2c.write_byte_data(display_10e1, mcp_gpio_reg, 0x00)	# display value on the 10e1 digit
+			isvalue = set_value
+		else:
+			i2c.write_byte_data(display_10e0, mcp_gpio_reg, segment[Digit(set_value, 1)])	# display value on the 10e0 digit
+			i2c.write_byte_data(display_10e1, mcp_gpio_reg, segment[Digit(set_value, 10)])	# display value on the 10e1 digit
+			isvalue = set_value
 
 # dimm the segments
 def Dimm(dimm, flash=False):
@@ -87,14 +97,21 @@ def Dimm(dimm, flash=False):
 	else:
 		p.ChangeDutyCycle(dimm)
 
-def AmbientLightControl(adcValue):
+def AmbientLightControl(adcValue, methode="lin"):
 	maxPWMvalue = 100 # in %
 	maxADCvalue = 4500 # in mV
 
-	# segment to ambient light linear
-	PWMvalue = (maxPWMvalue/maxADCvalue)*adcValue
-
-	# segment to ambient light exponential
-	# PWMvalue = maxPWMvalue * (1 - np.exp(-(1/maxADCvalue)*adcValue))
+	if(methode == "lin"):
+		# segment to ambient light linear
+		PWMvalue = (maxPWMvalue/maxADCvalue)*adcValue
+	elif(methode == "exp"):
+		# segment to ambient light exponential
+		PWMvalue = maxPWMvalue * (1 - np.exp(-(1/maxADCvalue)*adcValue))
+	else:
+		# default two point controller
+		if(adcValue >= 2250):
+			PWMvalue = 100
+		else:
+			PWMvalue = 50
 
 	return PWMvalue
