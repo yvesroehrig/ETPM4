@@ -209,11 +209,14 @@ def GetSpeed():
     # Calculate absolute valus
     z_f_abs = np.abs(z_f)
 
+    # round noise
+    z_f_abs[z_f_abs < settings.fft_thershold] = 0
+
     if settings.DEBUG == True:
         # Plot the FFT
         plt.figure(7)
         plt.clf()
-        plt.plot((x_f),z_f_abs,'*')
+        plt.plot(x_f,z_f_abs,'*')
         plt.grid()
         plt.title("FFT")
         plt.xlabel("Frequency [Hz]")
@@ -225,7 +228,11 @@ def GetSpeed():
     n_max = np.argmax(z_f_abs[0:int((settings.N_Samp/2)-1)])
     max_f = x_f[n_max-1]
     print("n Max: " + str(n_max) + "; max f:" + str(max_f))
-    v = -3.6*max_f/2*ld
+    if(n_max == 0):
+        v = 0
+    else:
+        v = -3.6*max_f/2*ld
+
     print("Measured Speed: "+ str(v))
 
     # speed array
