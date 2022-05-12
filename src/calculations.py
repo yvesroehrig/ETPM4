@@ -77,7 +77,6 @@ def Init():
         plt.axvline(((settings.Fs/2)-50), color='green') # lowpass frequency
         plt.legend(["Frequency response","Pass Band"])
         plt.savefig("./html/images/Filter.jpg", dpi=150)
-        plt.show()
         print("Filter plot saved")
     
     # create the window
@@ -98,7 +97,6 @@ def Init():
         plt.legend(["Hanning Window","Normalized Hanning Window"])
         plt.grid()
         plt.savefig("./html/images/Window.jpg", dpi=150)
-        plt.show()
         print("Window plot saved")
     
         stopTime = time.time()
@@ -115,7 +113,12 @@ def GetSpeed():
     I_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
     Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
 
+    # start measurement
     t_samp = meas(ctypes.c_uint8(0),ctypes.c_uint16(settings.N_Samp),I_sig,Q_sig)
+
+    # check for clipping
+    if((np.amax(I_sig) == 4095) or (np.amax(Q_sig) == 4095)):
+        return 999
 
     t = np.linspace(0,(t_samp/1e6), settings.N_Samp)
     # create time vector
@@ -227,7 +230,9 @@ def GetSpeed():
     # calculate speed
     n_max = np.argmax(z_f_abs[0:int((settings.N_Samp/2)-1)])
     max_f = x_f[n_max-1]
-    print("n Max: " + str(n_max) + "; max f:" + str(max_f))
+    if(settings.DEBUG == True): 
+        print("n Max: " + str(n_max) + "; max f:" + str(max_f))
+        
     if(n_max == 0):
         v = 0
     else:
@@ -267,7 +272,6 @@ def demoSignal():
     A1 = 2.500                  # Amplitude
     DC = 2.5                    # DC value
     I1 = A1*np.cos(w1*t) + DC   # Build the signal
-
     Q1 = A1*-np.sin(w1*t) + DC
 
     # noise 1
@@ -300,13 +304,31 @@ def demoSignal():
         plt.ylabel("Voltage in V")
         plt.legend(["I-Signal", "Q-Singal"])
         plt.savefig("./html/images/Demosignal.jpg",dpi=100)
-        plt.show()
 
     demoSig = np.zeros([settings.N_Samp,2])
     demoSig[:,0] = I
     demoSig[:,1] = Q
 
     return I,Q
+
+def get_I_B(Samp):
+    brightness = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+    current = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+
+    time = meas(ctypes.c_uint8(1),ctypes.c_uint16(settings.N_Samp_I_B,brightness,current))
+
+    t = np.linspace(0,time,time/settings.N_Samp_I_B)
+
+    if(settings.DEBUG == True):
+        plt.figure(300)
+        plt.clf()
+        plt.plot(t,brightness,t,current)
+        plt.grid()
+        plt.title("Brightness and Current measurement data")
+        plt.legend(["Brightness","Current"])
+        plt.savefig("./html/images/B_C_data.jpg",dpi=150)
+    
+
     
 
 if __name__ == "__main__":
