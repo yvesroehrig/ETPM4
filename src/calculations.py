@@ -37,8 +37,6 @@ meas.argtypes =  [ctypes.c_uint8,
                 ctypes.c_uint16,
                 ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS"),
                 ndpointer(ctypes.c_uint16, flags="C_CONTIGUOUS")] # set input types
-    
-#Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
 
 # Initialisation for the calculations
 def Init():
