@@ -10,6 +10,7 @@ from scipy.signal import hann, butter, filtfilt
 from scipy import signal
 import matplotlib.pyplot as plt
 import settings
+import pga
 from ctypes import *
 import gc
 
@@ -118,6 +119,8 @@ def GetSpeed():
 
     # check for clipping
     if((np.amax(I_sig) == 4095) or (np.amax(Q_sig) == 4095)):
+        if(settings.DEBUG == True):
+            print("Clipping detected")
         return 999
 
     t = np.linspace(0,(t_samp/1e6), settings.N_Samp)
@@ -140,10 +143,6 @@ def GetSpeed():
         plt.savefig("./html/images/Input.jpg",dpi=150)
         print("Input plot saved")
 
-    # convert from mV to V
-    I_sig = I_sig/1000
-    Q_sig = Q_sig/1000
-
     # calculate DC
     DC_I = 1/settings.N_Samp * np.sum(I_sig)
     DC_Q = 1/settings.N_Samp * np.sum(Q_sig)
@@ -165,7 +164,16 @@ def GetSpeed():
         plt.savefig("./html/images/DC_free_input.jpg",dpi=150)
         print("DC-free plot saved")
 
-    
+    # check if the signal is to low
+    if((np.ptp(I_sig) < settings.min_sig_pga) and (np.ptp(Q_sig) < settings.min_sig_pga) and (pga.pga_amp < 7)):
+        if(settings.DEBUG == True):
+            print("Low signal detected")
+        return -999
+
+    # convert from mV to V
+    I_sig = I_sig/1000
+    Q_sig = Q_sig/1000
+
     # Filter the signal
     I_filt = filtfilt(b,a,I_sig)
     Q_filt = filtfilt(b,a,Q_sig)
