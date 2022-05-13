@@ -123,8 +123,14 @@ def GetSpeed():
             print("Clipping detected")
         return 999
 
-    t = np.linspace(0,(t_samp/1e6), settings.N_Samp)
+    # check if the signal is to low
+    if((np.ptp(I_sig) < settings.min_sig_pga) and (np.ptp(Q_sig) < settings.min_sig_pga) and (pga.pga_amp < 7)):
+        if(settings.DEBUG == True):
+            print("Low signal detected")
+        return -999
+
     # create time vector
+    t = np.linspace(0,(t_samp/1e6), settings.N_Samp)
 
     # Demo Signal
     if settings.DEMO == True:
@@ -163,12 +169,6 @@ def GetSpeed():
         plt.legend(["I-Signal", "Q-Singal"])
         plt.savefig("./html/images/DC_free_input.jpg",dpi=150)
         print("DC-free plot saved")
-
-    # check if the signal is to low
-    if((np.ptp(I_sig) < settings.min_sig_pga) and (np.ptp(Q_sig) < settings.min_sig_pga) and (pga.pga_amp < 7)):
-        if(settings.DEBUG == True):
-            print("Low signal detected")
-        return -999
 
     # convert from mV to V
     I_sig = I_sig/1000
