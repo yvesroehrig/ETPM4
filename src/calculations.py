@@ -11,6 +11,7 @@ from scipy import signal
 import matplotlib.pyplot as plt
 import settings
 import pga
+import debug.py
 from ctypes import *
 import gc
 
@@ -28,7 +29,7 @@ global speed_array
 speed_array = [0]
 
 # C Functions
-so_file = "./test/adc2.so" # set the lib
+so_file = "./src/lib/adc2.so" # set the lib
 ADC = CDLL(so_file) # open lib
 meas = ADC.adc_meas
 meas.restype = ctypes.c_uint32 # set output type
