@@ -11,7 +11,7 @@ from scipy import signal
 import matplotlib.pyplot as plt
 import settings
 import pga
-import debug.py
+import debug
 from ctypes import *
 import gc
 
