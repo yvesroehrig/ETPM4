@@ -338,6 +338,7 @@ def get_I_B(Samp):
         plt.legend(["Brightness","Current"])
         plt.savefig("./html/images/B_C_data.jpg",dpi=150)
     
+    return np.average(brightness),np.average(current)
 
     
 
