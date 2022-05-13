@@ -202,6 +202,7 @@ def GetSpeed():
         plt.plot(t,I_filt,t,Q_filt)
         plt.title("Filtered and windowed Signal")
         plt.legend(["I-Signal", "Q-Singal"])
+        plt.grid()
         plt.savefig("./html/images/filtered_windowed.jpg", dpi=150)
         print("Windowed Signal saved")
 

@@ -8,7 +8,7 @@ N_Samp_I_B  = 100       # Number of Samples for the current and brightness measu
 Filt_ord    = 10        # Order of the digital filter
 f_band_low  = 400       # Lower frequency for bandpass
 f_band_high = (Fs/2)-50 # Higher frequency for bandpass at half
-fft_thershold = 0.1     # Thershold for the FFT
+fft_thershold = 0.05     # Thershold for the FFT
 min_sig_pga = 200       # When signal peak to peak is below this value the amplification
 
 # Display settings
