@@ -118,7 +118,7 @@ def GetSpeed():
     t_samp = meas(ctypes.c_uint8(0),ctypes.c_uint16(settings.N_Samp),I_sig,Q_sig)
 
     # check for clipping
-    if((np.amax(I_sig) == 4095) or (np.amax(Q_sig) == 4095)):
+    if(((np.amax(I_sig) == 4095) or (np.amax(Q_sig) == 4095)) and (pga.pga_amp > 1)):
         if(settings.DEBUG == True):
             print("Clipping detected")
         return 999
