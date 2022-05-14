@@ -16,3 +16,4 @@ img_res     = 150       # resulution of plots in dpi
 FLASH_TIME		= 1		# Flashing time in seconds when speed exceeded
 PWM_PIN			= 12	# referece at gpio pinout diagram
 PWM_FREQUENCY	= 500	# Hz
+TEST_SLEEP_TIME = 0.8   # s
