@@ -250,7 +250,8 @@ def GetSpeed():
     else:
         v = -3.6*max_f/2*ld
 
-    print("Measured Speed: "+ str(v))
+    if settings.DEBUG == True:
+        print("Measured Speed: "+ str(v))
 
     # speed array
     global speed_array
@@ -265,7 +266,8 @@ def GetSpeed():
 
     # stop time measurement and print
     stopTime = time.time()
-    print("Measurement and Calculation Time:" + str(stopTime-localStartTime))
+    if settings.DEBUG == True:
+        print("Measurement and Calculation Time:" + str(stopTime-localStartTime))
 
     # Garbage collector
     gc.collect()
@@ -323,13 +325,13 @@ def demoSignal():
 
     return I,Q
 
-def get_I_B(Samp):
-    brightness = np.ascontiguousarray(np.empty(settings.N_Samp_I_B, dtype=ctypes.c_uint16))
+def get_I_B():
     current = np.ascontiguousarray(np.empty(settings.N_Samp_I_B, dtype=ctypes.c_uint16))
+    brightness = np.ascontiguousarray(np.empty(settings.N_Samp_I_B, dtype=ctypes.c_uint16))
 
-    time = meas(ctypes.c_uint8(1),ctypes.c_uint16(settings.N_Samp_I_B,brightness,current))
+    time = meas(ctypes.c_uint8(1),ctypes.c_uint16(settings.N_Samp_I_B),current,brightness)
 
-    t = np.linspace(0,time,time/settings.N_Samp_I_B)
+    t = np.linspace(0, (time/1e6), settings.N_Samp_I_B)
 
     if(settings.DEBUG == True):
         plt.figure(300)
@@ -340,7 +342,7 @@ def get_I_B(Samp):
         plt.legend(["Brightness","Current"])
         plt.savefig("./html/images/B_C_data.jpg",dpi=150)
     
-    return np.average(brightness),np.average(current)
+    return np.average(current),np.average(brightness)
 
     
 

@@ -29,9 +29,9 @@ try:
 		# Measurement and calculation of speed
 		speed = calculations.GetSpeed()
 		intspeed = int(speed)
-		brightness, current = calculations.get_I_B()
-		brightness = int(brightness)
+		current, brightness = calculations.get_I_B()
 		current = int(current)
+		brightness = int(brightness)
 
 		# get button state
 		button.GetInput()
