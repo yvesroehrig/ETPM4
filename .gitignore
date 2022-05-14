@@ -11,7 +11,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -131,3 +130,6 @@ dmypy.json
 *.bmp
 *.tif
 *.gif
+
+# Mac stuff:
+*.DS_Store
