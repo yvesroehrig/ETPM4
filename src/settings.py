@@ -17,6 +17,3 @@ FLASH_TIME		= 1		# Flashing time in seconds when speed exceeded
 PWM_PIN			= 12	# referece at gpio pinout diagram
 PWM_FREQUENCY	= 500	# Hz
 TEST_SLEEP_TIME = 0.8   # s
-
-# optional parameters
-N_OPT_Samp = 32			# number of samples for light and current measurement

@@ -320,8 +320,8 @@ def demoSignal():
     return I,Q
 
 def get_I_B(Samp):
-    brightness = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
-    current = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+    brightness = np.ascontiguousarray(np.empty(settings.N_Samp_I_B, dtype=ctypes.c_uint16))
+    current = np.ascontiguousarray(np.empty(settings.N_Samp_I_B, dtype=ctypes.c_uint16))
 
     time = meas(ctypes.c_uint8(1),ctypes.c_uint16(settings.N_Samp_I_B,brightness,current))
 
