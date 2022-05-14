@@ -7,7 +7,7 @@
  * 
  * @copyright Copyright (c) 2022
  * 
- * compile with following command:"cc -fPIC -shared -o test/adc2.so test/adc2.c -li2c"
+ * compile with following command:"cc -fPIC -shared -o src/lib/adc2.so src/lib/adc2.c -li2c"
  */
 
 #define PY_SSIZE_T_CLEAN
@@ -109,6 +109,6 @@ uint32_t adc_meas(uint8_t CH, uint16_t N_samp, uint16_t *data_ADC1, uint16_t *da
     data_ADC2[i] = ((data_ADC2[i] & MASK_UPPER_BYTE)>>12) | ((data_ADC2[i] & MASK_LOWER_BYTE)<<4);
     //printf("ADC1: %u ADC2: %u\n", data_ADC1[i],data_ADC2[i]);
   }
-  printf("C-Time: %u\n",t_samp);
+  //printf("C-Time: %u\n",t_samp);
   return t_samp;
 }
