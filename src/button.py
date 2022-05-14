@@ -20,25 +20,25 @@ mcp_gpio_reg = 0b00001001
 mcp_set_gpio_in = 0b11111111 # Configure all pins as input
 
 def Init():
-    i2c.write_byte_data(buttons, mcp_conf_reg, mcp_set_gpio_in)	# Configure all pins as input
+	i2c.write_byte_data(buttons, mcp_conf_reg, mcp_set_gpio_in)	# Configure all pins as input
 
 def GetInput():
-    global button
-    input = i2c.read_byte_data(buttons, mcp_gpio_reg)
-    for i in range(8):
-        button[i] = (input>>i) & 1
+	global button
+	input = i2c.read_byte_data(buttons, mcp_gpio_reg)
+	for i in range(8):
+		button[i] = (input>>i) & 1
 
 def GetSpeedLimit():
-    global speedLimit
-    global button
-    
-    if(button[0]):
-        speedLimit = 20
-    elif(button[1]):
-        speedLimit = 30
-    elif(button[2]):
-        speedLimit = 50
-    elif(button[3]):
-        speedLimit = 80
-    
-    return speedLimit
+	global speedLimit
+	global button
+
+	if(button[0]):
+		speedLimit = 20
+	elif(button[1]):
+		speedLimit = 30
+	elif(button[2]):
+		speedLimit = 50
+	elif(button[3]):
+		speedLimit = 80
+
+	return speedLimit

@@ -20,7 +20,7 @@ try:
 	calculations.Init()
 	pga.Init()
 
-  # display test
+  	# display test
 	display.Dimm(100, False)
 	display.Test()
 
@@ -33,15 +33,23 @@ try:
 		# get button state
 		button.GetInput()
 
-		# display measured speed at display
-		display.Set(intspeed)
-
-		if(button.GetSpeedLimit() < intspeed):
-			display.Dimm(50, True)
+        # check for amplifications
+		if(speed == 999):
+			# set PGA 1 level lower
+			pga.adjust_gain(-1)
+		elif(speed == -999):
+			# set PGA 1 level higher
+			pga.adjust_gain(1)
 		else:
-			display.Dimm(50, False)
+			# display measured speed at display
+			display.Set(intspeed)
 
-		time.sleep(1)
+			if(button.GetSpeedLimit() < intspeed):
+				display.Dimm(50, True)
+			else:
+				display.Dimm(50, False)
+
+			time.sleep(1)
 
 except KeyboardInterrupt:
 	display.Deinit()
