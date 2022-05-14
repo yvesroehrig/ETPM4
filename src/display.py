@@ -7,7 +7,7 @@ import time
 
 # global variables
 global toggle; toggle = False
-global isvalue; isvalue = 0
+global isvalue; isvalue = -2
 global reftime; reftime = 0
 
 # variables
@@ -58,6 +58,9 @@ def Deinit():
 def Test():
 	i2c.write_byte_data(display_10e0, mcp_gpio_reg, 0xFF)	# set all outputs high
 	i2c.write_byte_data(display_10e1, mcp_gpio_reg, 0xFF)	# set all outputs high
+	time.sleep(settings.TEST_SLEEP_TIME)
+	i2c.write_byte_data(display_10e0, mcp_gpio_reg, 0x00)	# set all outputs high
+	i2c.write_byte_data(display_10e1, mcp_gpio_reg, 0x00)	# set all outputs high
 
 # write new value to the segment displays
 def Set(set_value):

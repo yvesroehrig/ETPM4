@@ -18,18 +18,17 @@ try:
 	display.Init()
 	button.Init()
 	calculations.Init()
-  pga.Init()
+	pga.Init()
 
   # display test
 	display.Dimm(100, False)
 	display.Test()
-	time.sleep(2)
 
 	# infined loop
 	while(1):
-    # Measurement and calculation of speed
-    speed = calculations.GetSpeed()
-    intspeed = int(speed)
+		# Measurement and calculation of speed
+		speed = calculations.GetSpeed()
+		intspeed = int(speed)
 
 		# get button state
 		button.GetInput()
