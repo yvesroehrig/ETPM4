@@ -29,6 +29,9 @@ try:
 		# Measurement and calculation of speed
 		speed = calculations.GetSpeed()
 		intspeed = int(speed)
+		brightness, current = calculations.get_I_B()
+		brightness = int(brightness)
+		current = int(current)
 
 		# get button state
 		button.GetInput()
@@ -50,6 +53,8 @@ try:
 				display.Dimm(50, False)
 
 			time.sleep(1)
+			print("Brightness:\t%4d" % (brightness))
+			print("Current:\t%4d" % (current))
 
 except KeyboardInterrupt:
 	display.Deinit()
