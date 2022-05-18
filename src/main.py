@@ -49,6 +49,8 @@ try:
 			else:
 				display.Dimm(50, False)
 
+			calculations.get_I_B()
+			
 			time.sleep(1)
 
 except KeyboardInterrupt:
