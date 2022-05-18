@@ -14,6 +14,7 @@ import pga
 import debug
 from ctypes import *
 import gc
+import platform
 
 
 # Constants
@@ -29,7 +30,10 @@ global speed_array
 speed_array = [0]
 
 # C Functions
-so_file = "./src/lib/adc2.so" # set the lib
+if(platform.machine() == 'armv6l'):
+    so_file = "./src/lib/adc2_zero1.so" # set the lib
+else:
+    so_file = "./src/lib/adc2.so" # set the lib
 ADC = CDLL(so_file) # open lib
 meas = ADC.adc_meas
 meas.restype = ctypes.c_uint32 # set output type
@@ -60,7 +64,7 @@ def Init():
 
     # calculate the digital filter
     global b,a
-    b,a = butter(10, np.multiply([400, ((settings.Fs/2)-50)], 2*np.pi), btype="band", fs=(settings.Fs*2*np.pi), output='ba', analog=False)
+    b,a = butter(2, np.multiply(settings.f_band_low, 2*np.pi), btype="highpass", fs=(settings.Fs*2*np.pi), output='ba', analog=False)
     
     # Plot filter
     if settings.DEBUG == True:
@@ -73,8 +77,7 @@ def Init():
         plt.ylabel('Amplitude [dB]')
         plt.grid(which='both', axis='both')
         plt.margins(0.1)
-        plt.axvline(400, color='green') # highpass frequency
-        plt.axvline(((settings.Fs/2)-50), color='green') # lowpass frequency
+        plt.axvline(settings.f_band_low, color='green') # highpass frequency
         plt.legend(["Frequency response","Pass Band"])
         plt.savefig("./html/images/Filter.jpg", dpi=150)
         print("Filter plot saved")
