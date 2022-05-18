@@ -23,7 +23,6 @@ try:
   	# display test
 	display.Dimm(100, False)
 	display.Test()
-	time.sleep(2)
 
 	# infined loop
 	while(1):
