@@ -71,14 +71,14 @@ def Init():
         w,h = signal.freqz(b,a, worN=settings.N_Samp,fs=wFs)
         plt.figure(1)
         plt.clf()
-        plt.semilogx(w/(2*np.pi),20*np.log10(abs(h)))
+        plt.semilogx(w/(2*np.pi),20*np.log10(np.abs(h)))
         plt.title('Butterworth filter frequency response')
         plt.xlabel('Frequency [Hz]')
         plt.ylabel('Amplitude [dB]')
         plt.grid(which='both', axis='both')
         plt.margins(0.1)
         plt.axvline(settings.f_band_low, color='green') # highpass frequency
-        plt.legend(["Frequency response","Pass Band"])
+        plt.legend(["Frequency response","Cutoff frequency"])
         plt.savefig("./html/images/Filter.jpg", dpi=150)
         print("Filter plot saved")
     
@@ -117,7 +117,8 @@ def GetSpeed():
     Q_sig = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
 
     # start measurement
-    t_samp = meas(ctypes.c_uint8(0),ctypes.c_uint16(settings.N_Samp),I_sig,Q_sig)
+    if settings.DEMO == False:
+        t_samp = meas(ctypes.c_uint8(0),ctypes.c_uint16(settings.N_Samp),I_sig,Q_sig)
 
     # check for clipping
     if(((np.amax(I_sig) == 4095) or (np.amax(Q_sig) == 4095)) and (pga.pga_amp > 1)):
@@ -167,7 +168,7 @@ def GetSpeed():
         plt.grid()
         plt.title("Input Signal with removed DC")
         plt.xlabel("Time in s")
-        plt.ylabel("Voltage in V")
+        plt.ylabel("Voltage in mV")
         plt.legend(["I-Signal", "Q-Singal"])
         plt.savefig("./html/images/DC_free_input.jpg",dpi=150)
         print("DC-free plot saved")
