@@ -34,6 +34,7 @@ if(platform.machine() == 'armv6l'):
     so_file = "./src/lib/adc2_zero1.so" # set the lib
 else:
     so_file = "./src/lib/adc2.so" # set the lib
+
 ADC = CDLL(so_file) # open lib
 meas = ADC.adc_meas
 meas.restype = ctypes.c_uint32 # set output type
