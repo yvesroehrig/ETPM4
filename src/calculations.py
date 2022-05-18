@@ -15,6 +15,7 @@ import debug
 from ctypes import *
 import gc
 import platform
+import display
 
 
 # Constants
@@ -65,14 +66,14 @@ def Init():
 
     # calculate the digital filter
     global b,a
-    b,a = butter(2, np.multiply(settings.f_band_low, 2*np.pi), btype="highpass", fs=(settings.Fs*2*np.pi), output='ba', analog=False)
+    b,a = butter(4, settings.f_band_low *2*np.pi, btype="highpass", fs=(settings.Fs*2*np.pi), output='ba', analog=False)
     
     # Plot filter
     if settings.DEBUG == True:
         w,h = signal.freqz(b,a, worN=settings.N_Samp,fs=wFs)
         plt.figure(1)
         plt.clf()
-        plt.semilogx(w/(2*np.pi),20*np.log10(np.abs(h)))
+        plt.semilogx(w/(2*np.pi),20*np.log10(np.absolute(h)))
         plt.title('Butterworth filter frequency response')
         plt.xlabel('Frequency [Hz]')
         plt.ylabel('Amplitude [dB]')
@@ -121,25 +122,25 @@ def GetSpeed():
     if settings.DEMO == False:
         t_samp = meas(ctypes.c_uint8(0),ctypes.c_uint16(settings.N_Samp),I_sig,Q_sig)
 
-    # check for clipping
-    if(((np.amax(I_sig) == 4095) or (np.amax(Q_sig) == 4095)) and (pga.pga_amp > 1)):
-        if(settings.DEBUG == True):
-            print("Clipping detected")
-        return 999
+        # check for clipping
+        if(((np.amax(I_sig) == 4095) or (np.amax(Q_sig) == 4095)) and (pga.pga_amp > 1)):
+            if(settings.DEBUG == True):
+                print("Clipping detected")
+            return 999
 
-    # check if the signal is to low
-    if((np.ptp(I_sig) < settings.min_sig_pga) and (np.ptp(Q_sig) < settings.min_sig_pga) and (pga.pga_amp < 7)):
-        if(settings.DEBUG == True):
-            print("Low signal detected")
-        return -999
+        # check if the signal is to low
+        if((np.ptp(I_sig) < settings.min_sig_pga) and (np.ptp(Q_sig) < settings.min_sig_pga) and (pga.pga_amp < 7)):
+            if(settings.DEBUG == True):
+                print("Low signal detected")
+            return -999
 
-    # create time vector
-    t = np.linspace(0,(t_samp/1e6), settings.N_Samp)
-
-    # Demo Signal
-    if settings.DEMO == True:
+        # create time vector
+        t = np.linspace(0,(t_samp/1e6), settings.N_Samp)
+    else:
+        # Demo Signal
         I_sig, Q_sig = demoSignal()
         t = np.linspace(0,TS,settings.N_Samp)
+
     # Plot input signal
     if settings.DEBUG == True:
         plt.figure(3)
@@ -324,13 +325,13 @@ def demoSignal():
 
     return I,Q
 
-def get_I_B(Samp):
-    brightness = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
-    current = np.ascontiguousarray(np.empty(settings.N_Samp, dtype=ctypes.c_uint16))
+def get_I_B():
+    brightness = np.ascontiguousarray(np.empty(settings.N_Samp_I_B, dtype=ctypes.c_uint16))
+    current = np.ascontiguousarray(np.empty(settings.N_Samp_I_B, dtype=ctypes.c_uint16))
 
-    time = meas(ctypes.c_uint8(1),ctypes.c_uint16(settings.N_Samp_I_B,brightness,current))
+    time = meas(ctypes.c_uint8(1),ctypes.c_uint16(settings.N_Samp_I_B),brightness,current)
 
-    t = np.linspace(0,time,time/settings.N_Samp_I_B)
+    t = np.linspace(0,time,settings.N_Samp_I_B)
 
     if(settings.DEBUG == True):
         plt.figure(300)
@@ -340,6 +341,7 @@ def get_I_B(Samp):
         plt.title("Brightness and Current measurement data")
         plt.legend(["Brightness","Current"])
         plt.savefig("./html/images/B_C_data.jpg",dpi=150)
+        print("Brightness and current plot saved")
     
     return np.average(brightness),np.average(current)
 
@@ -347,6 +349,10 @@ def get_I_B(Samp):
 
 if __name__ == "__main__":
     Init()
-    while(1):
-        GetSpeed()
+    #while(1):
+    GetSpeed()
+    display.Init()
+    display.Dimm(100,False)
+    display.Set(88)
+    get_I_B()
     
