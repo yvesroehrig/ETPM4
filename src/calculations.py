@@ -28,7 +28,11 @@ global globalstartTime
 global localStartTime
 global TS
 global speed_array
+global brightness_array
+global current_array
 speed_array = [0]
+brightness_array = [0]
+current_array = [0]
 
 # C Functions
 if(platform.machine() == 'armv6l'):
@@ -326,12 +330,18 @@ def demoSignal():
     return I,Q
 
 def get_I_B():
+    global brightness_array
+    global current_array
+
     brightness = np.ascontiguousarray(np.empty(settings.N_Samp_I_B, dtype=ctypes.c_uint16))
     current = np.ascontiguousarray(np.empty(settings.N_Samp_I_B, dtype=ctypes.c_uint16))
 
     time = meas(ctypes.c_uint8(1),ctypes.c_uint16(settings.N_Samp_I_B),brightness,current)
 
     t = np.linspace(0,time,settings.N_Samp_I_B)
+
+    brightness_array.append(np.average(brightness))
+    current_array.append(np.average(current/0.226*1000))
 
     if(settings.DEBUG == True):
         plt.figure(300)
@@ -341,11 +351,20 @@ def get_I_B():
         plt.title("Brightness and Current measurement data")
         plt.legend(["Brightness","Current"])
         plt.savefig("./html/images/B_C_data.jpg",dpi=150)
-        print("Brightness and current plot saved")
-    
-    return np.average(brightness),np.average(current)
+        print("Brightness and current data plot saved")
 
-    
+        plt.figure(301)
+        plt.clf()
+        plt.plot(brightness_array)
+        plt.plot(current_array)
+        plt.grid()
+        plt.title("Brightness and Current over Time")
+        plt.legend(["Current in mA","Brightness"])
+        plt.savefig("./html/images/B_C_data_time.jpg",dpi=150)
+        print("Brightness and current plot saved")
+
+    return np.average(brightness),np.average(current/0.226*1000)
+
 
 if __name__ == "__main__":
     Init()
