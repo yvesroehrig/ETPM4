@@ -9,6 +9,7 @@ from scipy.fft import fft, fftshift, fftfreq
 from scipy.signal import hann, butter, filtfilt
 from scipy import signal
 import matplotlib.pyplot as plt
+from matplotlib import use
 import settings
 import pga
 import debug
@@ -33,6 +34,8 @@ global current_array
 speed_array = [0]
 brightness_array = [0]
 current_array = [0]
+
+use('AGG')
 
 # C Functions
 if(platform.machine() == 'armv6l'):
@@ -264,7 +267,7 @@ def GetSpeed():
     if settings.SPEED_GRAPH == True:
         plt.figure(8)
         plt.clf()
-        plt.plot(speed_array,'*')
+        plt.scatter(speed_array)
         plt.grid()
         plt.title("Measured Speeds")
         plt.savefig("./html/images/Speed_graph.jpg",dpi=150)
@@ -338,18 +341,20 @@ def get_I_B():
 
     time = meas(ctypes.c_uint8(1),ctypes.c_uint16(settings.N_Samp_I_B),brightness,current)
 
-    t = np.linspace(0,time,settings.N_Samp_I_B)
+    t = np.linspace(0,time,settings.N_Samp_I_B)/1000
 
     brightness_array.append(np.average(brightness))
-    current_array.append(np.average(current/0.226*1000))
+    current_array.append(np.average(current/0.226))
 
     if(settings.DEBUG == True):
         plt.figure(300)
         plt.clf()
-        plt.plot(t,brightness,t,current)
+        plt.plot(t,current,t,brightness)
         plt.grid()
         plt.title("Brightness and Current measurement data")
         plt.legend(["Brightness","Current"])
+        plt.xlabel("time in ms")
+        plt.ylabel("Voltage in mV")
         plt.savefig("./html/images/B_C_data.jpg",dpi=150)
         print("Brightness and current data plot saved")
 
@@ -359,11 +364,11 @@ def get_I_B():
         plt.plot(current_array)
         plt.grid()
         plt.title("Brightness and Current over Time")
-        plt.legend(["Current in mA","Brightness"])
+        plt.legend(["Brightness","Current in mA"])
         plt.savefig("./html/images/B_C_data_time.jpg",dpi=150)
         print("Brightness and current plot saved")
 
-    return np.average(brightness),np.average(current/0.226*1000)
+    return np.average(brightness),np.average(current/0.226)
 
 
 if __name__ == "__main__":
