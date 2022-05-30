@@ -13,4 +13,4 @@ async def main():
         await asyncio.Future() # run forever
 
 if __name__ == "__main__":
-    asyncio.rund(main())
+    asyncio.run(main())
