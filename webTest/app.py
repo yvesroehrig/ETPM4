@@ -23,6 +23,12 @@ async def handler(websocket):
             "row": row,
         }
         await websocket.send(json.dumps(event))
+        await asyncio.sleep(0.5)
+    event = {
+        "type": "win",
+        "player": PLAYER1,
+    }
+    await websocket.send(json.dumps(event))
 
 async def main():
     async with websockets.serve(handler, "", 8001):
