@@ -5,7 +5,7 @@ import websockets
 
 async def handler(websocket):
     while True:
-        message = await websocket.rev()
+        message = await websocket.recv()
         print(message)
 
 async def main():
