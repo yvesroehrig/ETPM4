@@ -10,6 +10,8 @@ f_band_low  = 400       # Lower frequency for bandpass
 fft_thershold = 0.01    # Thershold for the FFT
 min_sig_pga = 200       # When signal peak to peak is below this value the amplification
 img_res     = 100       # resulution of plots in dpi
+fig_height  = 374       # figure height
+fig_width   = 500       # figure width
 
 # Display settings
 FLASH_TIME		= 1		# Flashing time in seconds when speed exceeded
