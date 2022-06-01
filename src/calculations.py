@@ -267,7 +267,7 @@ def GetSpeed():
     if settings.SPEED_GRAPH == True:
         plt.figure(8)
         plt.clf()
-        plt.scatter(speed_array)
+        plt.plot(speed_array)
         plt.grid()
         plt.title("Measured Speeds")
         plt.savefig("./html/images/Speed_graph.jpg",dpi=150)
