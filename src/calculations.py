@@ -38,8 +38,6 @@ speed_array = [0]
 brightness_array = [0]
 current_array = [0]
 
-use('AGG')
-mplstyle.use('fast')
 
 # C Functions
 if(platform.machine() == 'armv6l'):
@@ -67,6 +65,9 @@ def Init():
     wFs = settings.Fs*2*np.pi    # circular sampling frequency
     DT = 1/settings.Fs           # Time per sample
     TS = DT*settings.N_Samp       # Sampling time
+
+    use('AGG')
+    mplstyle.use('fast')    
 
     if settings.DEBUG == True:
         print("Number of samples: " + str(settings.N_Samp))
@@ -122,6 +123,9 @@ def Init():
 
 
 def GetSpeed():
+    use('AGG')
+    mplstyle.use('fast')
+    
     # start time measurement
     global localStartTime
     localStartTime = time.time()
