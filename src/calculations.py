@@ -10,6 +10,7 @@ from scipy.signal import hann, butter, filtfilt
 from scipy import signal
 import matplotlib.pyplot as plt
 from matplotlib import use
+import matplotlib.style as mplstyle
 import settings
 import pga
 import debug
@@ -36,6 +37,7 @@ brightness_array = [0]
 current_array = [0]
 
 use('AGG')
+mplstyle.use('fast')
 
 # C Functions
 if(platform.machine() == 'armv6l'):
