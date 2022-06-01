@@ -111,7 +111,7 @@ def Init():
         plt.title("Hanning Window")
         plt.xlabel("Sample Number")
         plt.ylabel("Amplitude")
-        plt.legend(["Hanning Window","Normalized Hanning Window"])
+        plt.legend(["Hanning Window","Normalized Hanning Window"],loc='northwest')
         plt.grid()
         plt.tight_layout()
         plt.savefig("./html/images/Window.jpg", dpi=settings.img_res)
