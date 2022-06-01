@@ -88,7 +88,7 @@ def Init():
         plt.margins(0.1)
         plt.axvline(settings.f_band_low, color='green') # highpass frequency
         plt.legend(["Frequency response","Cutoff frequency"])
-        plt.savefig("./html/images/Filter.jpg", dpi=150)
+        plt.savefig("./html/images/Filter.jpg", dpi=settings.img_res)
         print("Filter plot saved")
     
     # create the window
@@ -108,7 +108,7 @@ def Init():
         plt.ylabel("Amplitude")
         plt.legend(["Hanning Window","Normalized Hanning Window"])
         plt.grid()
-        plt.savefig("./html/images/Window.jpg", dpi=150)
+        plt.savefig("./html/images/Window.jpg", dpi=settings.img_res)
         print("Window plot saved")
     
         stopTime = time.time()
@@ -158,7 +158,7 @@ def GetSpeed():
         plt.xlabel("Time in s")
         plt.ylabel("Voltage in mV")
         plt.legend(["I-Signal", "Q-Singal"])
-        plt.savefig("./html/images/Input.jpg",dpi=150)
+        plt.savefig("./html/images/Input.jpg",dpi=settings.img_res)
         print("Input plot saved")
 
     # calculate DC
@@ -179,7 +179,7 @@ def GetSpeed():
         plt.xlabel("Time in s")
         plt.ylabel("Voltage in mV")
         plt.legend(["I-Signal", "Q-Singal"])
-        plt.savefig("./html/images/DC_free_input.jpg",dpi=150)
+        plt.savefig("./html/images/DC_free_input.jpg",dpi=settings.img_res)
         print("DC-free plot saved")
 
     # convert from mV to V
@@ -198,7 +198,7 @@ def GetSpeed():
         plt.title("Filtered Signals")
         plt.xlabel("Time in s")
         plt.legend(["I-Signal", "Q-Singal"])
-        plt.savefig("./html/images/Filtered_Signals.jpg", dpi=150)
+        plt.savefig("./html/images/Filtered_Signals.jpg", dpi=settings.img_res)
         print("Filtered plot saved")
 
     # Apply the Window
@@ -215,7 +215,7 @@ def GetSpeed():
         plt.title("Filtered and windowed Signal")
         plt.legend(["I-Signal", "Q-Singal"])
         plt.grid()
-        plt.savefig("./html/images/filtered_windowed.jpg", dpi=150)
+        plt.savefig("./html/images/filtered_windowed.jpg", dpi=settings.img_res)
         print("Windowed Signal saved")
 
     # Combining I and Q signal
@@ -245,7 +245,7 @@ def GetSpeed():
         plt.title("FFT")
         plt.xlabel("Frequency [Hz]")
         plt.ylabel("|Signal|")
-        plt.savefig("./html/images/FFT.jpg",dpi=150)
+        plt.savefig("./html/images/FFT.jpg",dpi=settings.img_res)
         print("FFT plot saved")
 
     # calculate speed
@@ -270,7 +270,7 @@ def GetSpeed():
         plt.plot(speed_array)
         plt.grid()
         plt.title("Measured Speeds")
-        plt.savefig("./html/images/Speed_graph.jpg",dpi=150)
+        plt.savefig("./html/images/Speed_graph.jpg",dpi=settings.img_res)
 
     # stop time measurement and print
     stopTime = time.time()
@@ -355,7 +355,7 @@ def get_I_B():
         plt.legend(["Brightness","Current"])
         plt.xlabel("time in ms")
         plt.ylabel("Voltage in mV")
-        plt.savefig("./html/images/B_C_data.jpg",dpi=150)
+        plt.savefig("./html/images/B_C_data.jpg",dpi=settings.img_res)
         print("Brightness and current data plot saved")
 
         plt.figure(301)
@@ -365,7 +365,7 @@ def get_I_B():
         plt.grid()
         plt.title("Brightness and Current over Time")
         plt.legend(["Brightness","Current in mA"])
-        plt.savefig("./html/images/B_C_data_time.jpg",dpi=150)
+        plt.savefig("./html/images/B_C_data_time.jpg",dpi=settings.img_res)
         print("Brightness and current plot saved")
 
     return np.average(brightness),np.average(current/0.226)
