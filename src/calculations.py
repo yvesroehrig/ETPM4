@@ -82,7 +82,7 @@ def Init():
     # Plot filter
     if settings.DEBUG == True:
         w,h = signal.freqz(b,a, worN=settings.N_Samp,fs=wFs)
-        plt.figure(num=1,figsize=[500,374])
+        plt.figure(num=1)
         plt.clf()
         plt.semilogx(w/(2*np.pi),20*np.log10(np.absolute(h)))
         plt.title('Butterworth filter frequency response')
@@ -103,7 +103,7 @@ def Init():
 
     # Plot window
     if settings.DEBUG == True:
-        plt.figure(2,figsize=[500,374])
+        plt.figure(2)
         plt.clf()
         plt.plot(window)
         plt.plot(window_norm)
@@ -154,7 +154,7 @@ def GetSpeed():
 
     # Plot input signal
     if settings.DEBUG == True:
-        plt.figure(3,figsize=[500,374])
+        plt.figure(3)
         plt.clf()
         plt.plot(t,I_sig,t,Q_sig)
         plt.grid()
@@ -175,7 +175,7 @@ def GetSpeed():
 
     # Plot DC-free signal
     if settings.DEBUG == True:
-        plt.figure(4,figsize=[500,374])
+        plt.figure(4)
         plt.clf()
         plt.plot(t,I_sig,t,Q_sig)
         plt.grid()
@@ -195,7 +195,7 @@ def GetSpeed():
     Q_filt = filtfilt(b,a,Q_sig)
 
     if settings.DEBUG == True:
-        plt.figure(5,figsize=[500,374])
+        plt.figure(5)
         plt.clf()
         plt.plot(t,I_filt,t,Q_filt)
         plt.grid()
@@ -211,7 +211,7 @@ def GetSpeed():
 
     if settings.DEBUG == True:
         # apply the Window
-        plt.figure(6,figsize=[500,374])
+        plt.figure(6)
         plt.clf()
         I_filt = np.multiply(window,I_filt)
         Q_filt = np.multiply(window,Q_filt) 
@@ -242,7 +242,7 @@ def GetSpeed():
 
     if settings.DEBUG == True:
         # Plot the FFT
-        plt.figure(7,figsize=[500,374])
+        plt.figure(7)
         plt.clf()
         plt.plot(x_f,z_f_abs,'*')
         plt.grid()
@@ -320,7 +320,7 @@ def demoSignal():
 
     if settings.DEBUG == True:
         # Plot of the Signal
-        plt.figure(200,figsize=[500,374])
+        plt.figure(200)
         plt.clf()
         plt.plot(t,I,t,Q)
         plt.grid()
@@ -351,7 +351,7 @@ def get_I_B():
     current_array.append(np.average(current/0.226))
 
     if(settings.DEBUG == True):
-        plt.figure(300,figsize=[500,374])
+        plt.figure(300)
         plt.clf()
         plt.plot(t,current,t,brightness)
         plt.grid()
@@ -362,7 +362,7 @@ def get_I_B():
         plt.savefig("./html/images/B_C_data.jpg",dpi=settings.img_res)
         print("Brightness and current data plot saved")
 
-        plt.figure(301,figsize=[500,374])
+        plt.figure(301)
         plt.clf()
         plt.plot(brightness_array)
         plt.plot(current_array)
