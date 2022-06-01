@@ -92,6 +92,7 @@ def Init():
         plt.margins(0.1)
         plt.axvline(settings.f_band_low, color='green') # highpass frequency
         plt.legend(["Frequency response","Cutoff frequency"])
+        plt.tight_layout()
         plt.savefig("./html/images/Filter.jpg", dpi=settings.img_res)
         print("Filter plot saved")
     
@@ -112,6 +113,7 @@ def Init():
         plt.ylabel("Amplitude")
         plt.legend(["Hanning Window","Normalized Hanning Window"])
         plt.grid()
+        plt.tight_layout()
         plt.savefig("./html/images/Window.jpg", dpi=settings.img_res)
         print("Window plot saved")
     
