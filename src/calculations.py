@@ -82,7 +82,7 @@ def Init():
     # Plot filter
     if settings.DEBUG == True:
         w,h = signal.freqz(b,a, worN=settings.N_Samp,fs=wFs)
-        plt.figure(num=1)
+        plt.figure(num=1,figsize=[5,3.74])
         plt.clf()
         plt.semilogx(w/(2*np.pi),20*np.log10(np.absolute(h)))
         plt.title('Butterworth filter frequency response')
@@ -103,7 +103,7 @@ def Init():
 
     # Plot window
     if settings.DEBUG == True:
-        plt.figure(2)
+        plt.figure(num=2,figsize=[5,3.74])
         plt.clf()
         plt.plot(window)
         plt.plot(window_norm)
