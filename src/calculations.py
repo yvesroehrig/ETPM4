@@ -9,6 +9,10 @@ from scipy.fft import fft, fftshift, fftfreq
 from scipy.signal import hann, butter, filtfilt
 from scipy import signal
 import matplotlib.pyplot as plt
+from matplotlib import use
+import matplotlib as mpl
+import matplotlib.figure as mpf
+import matplotlib.style as mplstyle
 import settings
 import pga
 import debug
@@ -28,7 +32,12 @@ global globalstartTime
 global localStartTime
 global TS
 global speed_array
+global brightness_array
+global current_array
 speed_array = [0]
+brightness_array = [0]
+current_array = [0]
+
 
 # C Functions
 if(platform.machine() == 'armv6l'):
@@ -57,6 +66,9 @@ def Init():
     DT = 1/settings.Fs           # Time per sample
     TS = DT*settings.N_Samp       # Sampling time
 
+    use('AGG')
+    mplstyle.use('fast')    
+
     if settings.DEBUG == True:
         print("Number of samples: " + str(settings.N_Samp))
         print("Sampling frequency: " + str(settings.Fs))
@@ -71,7 +83,7 @@ def Init():
     # Plot filter
     if settings.DEBUG == True:
         w,h = signal.freqz(b,a, worN=settings.N_Samp,fs=wFs)
-        plt.figure(1)
+        plt.figure(num=1,figsize=[5,3.74])
         plt.clf()
         plt.semilogx(w/(2*np.pi),20*np.log10(np.absolute(h)))
         plt.title('Butterworth filter frequency response')
@@ -81,7 +93,8 @@ def Init():
         plt.margins(0.1)
         plt.axvline(settings.f_band_low, color='green') # highpass frequency
         plt.legend(["Frequency response","Cutoff frequency"])
-        plt.savefig("./html/images/Filter.jpg", dpi=150)
+        plt.tight_layout()
+        plt.savefig("./html/images/Filter.jpg", dpi=settings.img_res)
         print("Filter plot saved")
     
     # create the window
@@ -92,16 +105,17 @@ def Init():
 
     # Plot window
     if settings.DEBUG == True:
-        plt.figure(2)
+        plt.figure(num=2,figsize=[5,3.74])
         plt.clf()
         plt.plot(window)
         plt.plot(window_norm)
         plt.title("Hanning Window")
         plt.xlabel("Sample Number")
         plt.ylabel("Amplitude")
-        plt.legend(["Hanning Window","Normalized Hanning Window"])
+        plt.legend(["Hanning Window","Normalized Hanning Window"],loc='upper left')
         plt.grid()
-        plt.savefig("./html/images/Window.jpg", dpi=150)
+        plt.tight_layout()
+        plt.savefig("./html/images/Window.jpg", dpi=settings.img_res)
         print("Window plot saved")
     
         stopTime = time.time()
@@ -109,6 +123,9 @@ def Init():
 
 
 def GetSpeed():
+    use('AGG')
+    mplstyle.use('fast')
+    
     # start time measurement
     global localStartTime
     localStartTime = time.time()
@@ -151,7 +168,7 @@ def GetSpeed():
         plt.xlabel("Time in s")
         plt.ylabel("Voltage in mV")
         plt.legend(["I-Signal", "Q-Singal"])
-        plt.savefig("./html/images/Input.jpg",dpi=150)
+        plt.savefig("./html/images/Input.jpg",dpi=settings.img_res)
         print("Input plot saved")
 
     # calculate DC
@@ -172,7 +189,7 @@ def GetSpeed():
         plt.xlabel("Time in s")
         plt.ylabel("Voltage in mV")
         plt.legend(["I-Signal", "Q-Singal"])
-        plt.savefig("./html/images/DC_free_input.jpg",dpi=150)
+        plt.savefig("./html/images/DC_free_input.jpg",dpi=settings.img_res)
         print("DC-free plot saved")
 
     # convert from mV to V
@@ -191,7 +208,7 @@ def GetSpeed():
         plt.title("Filtered Signals")
         plt.xlabel("Time in s")
         plt.legend(["I-Signal", "Q-Singal"])
-        plt.savefig("./html/images/Filtered_Signals.jpg", dpi=150)
+        plt.savefig("./html/images/Filtered_Signals.jpg", dpi=settings.img_res)
         print("Filtered plot saved")
 
     # Apply the Window
@@ -208,7 +225,7 @@ def GetSpeed():
         plt.title("Filtered and windowed Signal")
         plt.legend(["I-Signal", "Q-Singal"])
         plt.grid()
-        plt.savefig("./html/images/filtered_windowed.jpg", dpi=150)
+        plt.savefig("./html/images/filtered_windowed.jpg", dpi=settings.img_res)
         print("Windowed Signal saved")
 
     # Combining I and Q signal
@@ -238,7 +255,7 @@ def GetSpeed():
         plt.title("FFT")
         plt.xlabel("Frequency [Hz]")
         plt.ylabel("|Signal|")
-        plt.savefig("./html/images/FFT.jpg",dpi=150)
+        plt.savefig("./html/images/FFT.jpg",dpi=settings.img_res)
         print("FFT plot saved")
 
     # calculate speed
@@ -260,10 +277,10 @@ def GetSpeed():
     if settings.SPEED_GRAPH == True:
         plt.figure(8)
         plt.clf()
-        plt.plot(speed_array,'*')
+        plt.plot(speed_array)
         plt.grid()
         plt.title("Measured Speeds")
-        plt.savefig("./html/images/Speed_graph.jpg",dpi=150)
+        plt.savefig("./html/images/Speed_graph.jpg",dpi=settings.img_res)
 
     # stop time measurement and print
     stopTime = time.time()
@@ -326,26 +343,43 @@ def demoSignal():
     return I,Q
 
 def get_I_B():
+    global brightness_array
+    global current_array
+
     brightness = np.ascontiguousarray(np.empty(settings.N_Samp_I_B, dtype=ctypes.c_uint16))
     current = np.ascontiguousarray(np.empty(settings.N_Samp_I_B, dtype=ctypes.c_uint16))
 
     time = meas(ctypes.c_uint8(1),ctypes.c_uint16(settings.N_Samp_I_B),brightness,current)
 
-    t = np.linspace(0,time,settings.N_Samp_I_B)
+    t = np.linspace(0,time,settings.N_Samp_I_B)/1000
+
+    brightness_array.append(np.average(brightness))
+    current_array.append(np.average(current/0.226))
 
     if(settings.DEBUG == True):
         plt.figure(300)
         plt.clf()
-        plt.plot(t,brightness,t,current)
+        plt.plot(t,current,t,brightness)
         plt.grid()
         plt.title("Brightness and Current measurement data")
         plt.legend(["Brightness","Current"])
-        plt.savefig("./html/images/B_C_data.jpg",dpi=150)
-        print("Brightness and current plot saved")
-    
-    return np.average(brightness),np.average(current)
+        plt.xlabel("time in ms")
+        plt.ylabel("Voltage in mV")
+        plt.savefig("./html/images/B_C_data.jpg",dpi=settings.img_res)
+        print("Brightness and current data plot saved")
 
-    
+        plt.figure(301)
+        plt.clf()
+        plt.plot(brightness_array)
+        plt.plot(current_array)
+        plt.grid()
+        plt.title("Brightness and Current over Time")
+        plt.legend(["Brightness","Current in mA"])
+        plt.savefig("./html/images/B_C_data_time.jpg",dpi=settings.img_res)
+        print("Brightness and current plot saved")
+
+    return np.average(brightness),np.average(current/0.226)
+
 
 if __name__ == "__main__":
     Init()
