@@ -57,6 +57,8 @@ try:
 				calculations.get_I_B()
 				counter += 1
 				time.sleep(1.5/100)
+			
+			counter = 0
 
 except KeyboardInterrupt:
 	display.Deinit()
