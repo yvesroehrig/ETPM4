@@ -54,11 +54,12 @@ try:
 				else:
 					display.Dimm(100, False)
 
-				calculations.get_I_B()
+				
 				counter += 1
 				time.sleep(1.5/100)
 			
 			counter = 0
+			calculations.get_I_B()
 
 except KeyboardInterrupt:
 	display.Deinit()
