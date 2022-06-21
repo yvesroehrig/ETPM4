@@ -360,8 +360,8 @@ def get_I_B():
 
         plt.figure(301)
         plt.clf()
-        plt.plot(brightness_array)
         plt.plot(current_array)
+        plt.plot(brightness_array)
         plt.grid()
         plt.title("Brightness and Current over Time")
         plt.legend(["Brightness","Current in mA"])

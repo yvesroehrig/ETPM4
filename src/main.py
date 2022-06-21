@@ -45,9 +45,9 @@ try:
 			display.Set(intspeed)
 
 			if(button.GetSpeedLimit() < intspeed):
-				display.Dimm(50, True)
+				display.Dimm(100, True)
 			else:
-				display.Dimm(50, False)
+				display.Dimm(100, False)
 
 			calculations.get_I_B()
 			
