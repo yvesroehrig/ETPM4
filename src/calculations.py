@@ -78,7 +78,7 @@ def Init():
     # Plot filter
     if settings.DEBUG == True:
         w,h = signal.freqz(b,a, worN=settings.N_Samp,fs=wFs)
-        plt.figure(1)
+        plt.figure(1,figsize=(5,3.74),dpi=100)
         plt.clf()
         plt.semilogx(w/(2*np.pi),20*np.log10(np.absolute(h)))
         plt.title('Butterworth filter frequency response')
@@ -88,7 +88,7 @@ def Init():
         plt.margins(0.1)
         plt.axvline(settings.f_band_low, color='green') # highpass frequency
         plt.legend(["Frequency response","Cutoff frequency"])
-        plt.savefig("./html/images/Filter.jpg", dpi=150)
+        plt.savefig("./html/images/Filter.jpg", dpi=100)
         print("Filter plot saved")
     
     # create the window
