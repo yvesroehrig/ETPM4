@@ -40,6 +40,8 @@ try:
 		elif(speed == -999):
 			# set PGA 1 level higher
 			pga.adjust_gain(1)
+		elif(speed == 0):
+			time.sleep(0.25)
 		else:
 			# display measured speed at display
 			display.Set(intspeed)
@@ -51,7 +53,7 @@ try:
 
 			calculations.get_I_B()
 			
-			time.sleep(1)
+			time.sleep(1.5)
 
 except KeyboardInterrupt:
 	display.Deinit()
