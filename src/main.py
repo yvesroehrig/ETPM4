@@ -12,6 +12,7 @@ import pga
 
 # test variables
 test_value = 65
+counter = 0
 
 try:
 	# initialisation of the system
@@ -30,9 +31,6 @@ try:
 		speed = calculations.GetSpeed()
 		intspeed = int(speed)
 
-		# get button state
-		button.GetInput()
-
         # check for amplifications
 		if(speed == 999):
 			# set PGA 1 level lower
@@ -44,17 +42,21 @@ try:
 			display.Set(intspeed)
 			time.sleep(0.25)
 		else:
-			# display measured speed at display
-			display.Set(intspeed)
+			while(counter < 100):
+				# get button state
+				button.GetInput()
 
-			if(button.GetSpeedLimit() < intspeed):
-				display.Dimm(100, True)
-			else:
-				display.Dimm(100, False)
+				# display measured speed at display
+				display.Set(intspeed)
 
-			calculations.get_I_B()
-			
-			time.sleep(1.5)
+				if(button.GetSpeedLimit() < intspeed):
+					display.Dimm(100, True)
+				else:
+					display.Dimm(100, False)
+
+				calculations.get_I_B()
+				counter += 1
+				time.sleep(1.5/100)
 
 except KeyboardInterrupt:
 	display.Deinit()
