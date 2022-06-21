@@ -1,5 +1,5 @@
 # global parameters
-DEBUG       = True     # Debug on/off
+DEBUG       = False     # Debug on/off
 DEMO        = False     # Demo on/off
 SPEED_GRAPH = True      # Speed graph on/off
 Fs          = 9000      # Sampling frequency
