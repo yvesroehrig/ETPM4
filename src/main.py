@@ -41,6 +41,7 @@ try:
 			# set PGA 1 level higher
 			pga.adjust_gain(1)
 		elif(speed == 0):
+			display.Set(intspeed)
 			time.sleep(0.25)
 		else:
 			# display measured speed at display
