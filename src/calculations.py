@@ -130,7 +130,7 @@ def GetSpeed():
         t_samp = meas(ctypes.c_uint8(0),ctypes.c_uint16(settings.N_Samp),I_sig,Q_sig)
 
         # check for clipping
-        if(((np.amax(I_sig) == 4095) or (np.amax(Q_sig) == 4095)) and (pga.pga_amp > 1)):
+        if(((np.amax(I_sig) >= settings.max_sig_pga) or (np.amax(Q_sig) >= settings.max_sig_pga)) and (pga.pga_amp > 1)):
             if(settings.DEBUG == True):
                 print("Clipping detected")
             return 999
@@ -267,7 +267,7 @@ def GetSpeed():
     if settings.SPEED_GRAPH == True:
         plt.figure(8)
         plt.clf()
-        plt.scatter(speed_array)
+        plt.plot(speed_array,'*')
         plt.grid()
         plt.title("Measured Speeds")
         plt.savefig("./html/images/Speed_graph.jpg",dpi=150)
