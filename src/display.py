@@ -32,7 +32,9 @@ mcp_gpio_reg = 0b00001001
 mcp_set_gpio_out = 0b00000000
 
 # translation array between MCP23008 and segment displays
+#			0			1			2			3			4			5			6			7			8			9			A			B			C			D			E			F
 segment = [0b00111111, 0b00000110, 0b01011011, 0b01001111, 0b01100110, 0b01101101, 0b01111101, 0b00000111, 0b01111111, 0b01101111]
+hex 	= [0b00111111, 0b00000110, 0b01011011, 0b01001111, 0b01100110, 0b01101101, 0b01111101, 0b00000111, 0b01111111, 0b01101111, 0b01110111, 0b01111100, 0b00111001, 0b01011110, 0b01111001, 0b01110001]
 
 # seperation of the decimals
 def Digit(number, digit):
@@ -118,3 +120,29 @@ def AmbientLightControl(adcValue, methode="lin"):
 			PWMvalue = 50
 
 	return PWMvalue
+
+def WriteHex(hex_value):
+	global isvalue
+
+	if(isvalue != hex_value):
+		if(hex_value == 0):
+			i2c.write_byte_data(display_10e0, mcp_gpio_reg, 0x00)						# display value on the 10e0 digit
+			i2c.write_byte_data(display_10e1, mcp_gpio_reg, 0x00)						# display value on the 10e1 digit
+			isvalue = hex_value
+		elif(hex_value <= 0x0f):
+			i2c.write_byte_data(display_10e0, mcp_gpio_reg, hex[hex_value])				# display value on the 10e0 digit
+			i2c.write_byte_data(display_10e1, mcp_gpio_reg, 0x00)						# display value on the 10e1 digit
+			isvalue = hex_value
+		else:
+			i2c.write_byte_data(display_10e0, mcp_gpio_reg, hex[(hex_value & 0x0f)])	# display value on the 10e0 digit
+			i2c.write_byte_data(display_10e1, mcp_gpio_reg, hex[(hex_value & 0xf0)>>4])	# display value on the 10e1 digit
+			isvalue = hex_value
+
+
+
+if __name__ == "__main__":
+	Init()
+	Dimm(100)
+	while(1):
+		WriteHex(0xE1)
+		Dimm(100,True)
