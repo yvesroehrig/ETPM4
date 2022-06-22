@@ -42,7 +42,7 @@ try:
 			display.Set(intspeed)
 			time.sleep(0.25)
 		else:
-			while(counter < 100):
+			while(counter < 200):
 				# get button state
 				button.GetInput()
 
@@ -56,7 +56,7 @@ try:
 
 				
 				counter += 1
-				time.sleep(1.5/100)
+				time.sleep(3/200)
 			
 			counter = 0
 			calculations.get_I_B()
